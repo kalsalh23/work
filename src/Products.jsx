@@ -11,6 +11,7 @@ export default function Products() {
   const [editQuantity, setEditQuantity] = useState('')
   const [editCategoryId, setEditCategoryId] = useState('')
   const [editDetails, setEditDetails] = useState('')
+  const [editBarcode, setEditBarcode] = useState('')
   const [lightbox, setLightbox] = useState(null)
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Products() {
     setEditQuantity(product.quantity)
     setEditCategoryId(product.category_id)
     setEditDetails(product.details || '')
+    setEditBarcode(product.barcode || '')
   }
 
   function cancelEdit() {
@@ -58,7 +60,7 @@ export default function Products() {
   async function saveEdit(id) {
     const { error } = await supabase
       .from('products')
-      .update({ name: editName, quantity: parseInt(editQuantity), category_id: editCategoryId, details: editDetails })
+      .update({ name: editName, quantity: parseInt(editQuantity), category_id: editCategoryId, details: editDetails, barcode: editBarcode.trim() || null })
       .eq('id', id)
 
     if (!error) {
@@ -131,6 +133,7 @@ export default function Products() {
                       ))}
                     </select>
                     <textarea value={editDetails} onChange={(e) => setEditDetails(e.target.value)} placeholder="تفاصيل" rows={2} />
+                    <input value={editBarcode} onChange={(e) => setEditBarcode(e.target.value)} placeholder="الباركود" dir="ltr" />
                     <div className="edit-actions">
                       <button className="save-btn" onClick={() => saveEdit(product.id)}>حفظ</button>
                       <button className="cancel-btn" onClick={cancelEdit}>إلغاء</button>
@@ -142,6 +145,7 @@ export default function Products() {
                     <p>العدد: {product.quantity}</p>
                     <p>الصنف: {product.categories?.name}</p>
                     {product.details && <p className="details">{product.details}</p>}
+                    {product.barcode && <p className="barcode-label">الباركود: {product.barcode}</p>}
                     <div className="product-actions">
                       <button className="edit-btn" onClick={() => startEdit(product)}>تعديل</button>
                       <button className="delete-btn" onClick={() => handleDelete(product.id)}>حذف</button>

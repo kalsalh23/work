@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import useBarcodeScanner from './useBarcodeScanner'
 
 export default function AddProduct({ onProductAdded }) {
   const [name, setName] = useState('')
@@ -8,10 +9,13 @@ export default function AddProduct({ onProductAdded }) {
   const [imagePreviews, setImagePreviews] = useState([])
   const [categoryId, setCategoryId] = useState('')
   const [details, setDetails] = useState('')
+  const [barcode, setBarcode] = useState('')
   const [categories, setCategories] = useState([])
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [newCategory, setNewCategory] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
+  const { startScanning, stopScanning } = useBarcodeScanner()
 
   useEffect(() => {
     loadCategories()
@@ -90,12 +94,54 @@ export default function AddProduct({ onProductAdded }) {
     })
   }
 
+  function openScanner() {
+    setShowScanner(true)
+    setTimeout(() => {
+      startScanning(
+        'barcode-scanner',
+        (code) => {
+          setBarcode(code)
+          setShowScanner(false)
+        },
+        (err) => {
+          setShowScanner(false)
+          if (err === 'permission_denied') {
+            alert('تم رفض الإذن بالكاميرا. يمكنك كتابة الباركود يدوياً.')
+          } else if (err === 'no_camera') {
+            alert('لا توجد كاميرا متاحة على هذا الجهاز.')
+          } else {
+            alert('تعذر فتح الكاميرا. يرجى كتابة الباركود يدوياً.')
+          }
+        }
+      )
+    }, 500)
+  }
+
+  function closeScanner() {
+    stopScanning()
+    setShowScanner(false)
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     if (!name || !quantity || !categoryId) return
     setLoading(true)
 
     try {
+      if (barcode.trim()) {
+        const { data: existing } = await supabase
+          .from('products')
+          .select('id')
+          .eq('barcode', barcode.trim())
+          .maybeSingle()
+
+        if (existing) {
+          alert('هذا الباركود مسجل مسبقاً لمنتج آخر.')
+          setLoading(false)
+          return
+        }
+      }
+
       const imageUrls = []
 
       for (const image of images) {
@@ -119,6 +165,7 @@ export default function AddProduct({ onProductAdded }) {
         images: imageUrls,
         category_id: categoryId,
         details,
+        barcode: barcode.trim() || null,
       })
 
       if (!error) {
@@ -128,6 +175,7 @@ export default function AddProduct({ onProductAdded }) {
         setImagePreviews([])
         setCategoryId('')
         setDetails('')
+        setBarcode('')
         onProductAdded()
       }
     } finally {
@@ -154,6 +202,21 @@ export default function AddProduct({ onProductAdded }) {
           onChange={(e) => setQuantity(e.target.value)}
           required
         />
+
+        <div className="barcode-row">
+          <div className="barcode-input-wrap">
+            <input
+              type="text"
+              placeholder="الباركود"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+              dir="ltr"
+            />
+          </div>
+          <button type="button" className="scan-btn" onClick={openScanner}>
+            📷 مسح الباركود
+          </button>
+        </div>
 
         <div className="image-upload">
           <label className="image-label multi">
@@ -224,6 +287,16 @@ export default function AddProduct({ onProductAdded }) {
           {loading ? 'جاري الحفظ...' : 'حفظ'}
         </button>
       </form>
+
+      {showScanner && (
+        <div className="scanner-overlay" onClick={closeScanner}>
+          <div className="scanner-modal" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="scanner-close" onClick={closeScanner}>&times;</button>
+            <p className="scanner-hint">وجّه الكاميرا نحو الباركود</p>
+            <div id="barcode-scanner" className="scanner-view" />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -535,6 +535,261 @@ body {
   border-radius: 10px;
 }
 
+.barcode-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.barcode-input-wrap {
+  flex: 1;
+}
+
+.barcode-input-wrap input {
+  margin-bottom: 0;
+}
+
+.scan-btn {
+  padding: 10px 14px;
+  background: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.scan-btn:hover {
+  background: #1a252f;
+}
+
+.scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scanner-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+
+.scanner-close {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #666;
+  z-index: 5;
+}
+
+.scanner-hint {
+  text-align: center;
+  color: #666;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.scanner-view {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+.scanner-page {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.scanner-active {
+  position: relative;
+}
+
+.scanner-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 220px;
+  height: 130px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.scanner-frame-corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: #2ecc71;
+  border-style: solid;
+}
+
+.scanner-frame-corner.tl { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+.scanner-frame-corner.tr { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+.scanner-frame-corner.bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+.scanner-frame-corner.br { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+.scanner-instruction {
+  text-align: center;
+  color: #2ecc71;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.scanner-view-wrap {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.scanner-view-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scanner-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.scanner-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e0e0e0;
+  border-top-color: #764ba2;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.scanner-result {
+  text-align: center;
+}
+
+.scanner-result-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  margin-bottom: 16px;
+}
+
+.scanner-result-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: #f5f5f5;
+}
+
+.scanner-result-info {
+  padding: 16px;
+  text-align: right;
+}
+
+.scanner-result-info h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.scanner-result-info p {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.scanner-result-info span {
+  font-weight: 600;
+  color: #333;
+}
+
+.scanner-result-details {
+  margin-top: 8px;
+  color: #888;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.scanner-not-found {
+  text-align: center;
+  padding: 60px 20px;
+  color: #e74c3c;
+  font-size: 1.05rem;
+}
+
+.scanner-error {
+  text-align: center;
+  padding: 60px 20px;
+  color: #e67e22;
+}
+
+.scanner-error p {
+  margin-bottom: 8px;
+}
+
+.scanner-sub {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.scan-retry-btn, .scan-again-btn {
+  padding: 12px 28px;
+  background: #764ba2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 16px;
+  transition: background 0.2s;
+}
+
+.scan-retry-btn:hover, .scan-again-btn:hover {
+  background: #5a3d7a;
+}
+
+.scan-again-btn {
+  background: #2ecc71;
+}
+
+.scan-again-btn:hover {
+  background: #27ae60;
+}
+
+.barcode-label {
+  color: #764ba2 !important;
+  font-size: 0.85rem !important;
+  margin-top: 4px !important;
+}
+
 .lightbox {
   position: fixed;
   top: 0;
