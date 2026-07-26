@@ -6,7 +6,7 @@ export default function BarcodeScanner() {
   const [scanResult, setScanResult] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [active, setActive] = useState(true)
+  const [cameraKey, setCameraKey] = useState(0)
 
   function playBeep() {
     try {
@@ -42,7 +42,6 @@ export default function BarcodeScanner() {
 
   const handleScan = useCallback(async (codes) => {
     if (codes.length === 0) return
-    setActive(false)
     setLoading(true)
 
     const code = codes[0].rawValue
@@ -69,29 +68,33 @@ export default function BarcodeScanner() {
   }, [])
 
   const handleError = useCallback((e) => {
-    if (e.name === 'NotAllowedError' || e.message?.includes('permission')) {
+    const name = e?.name || ''
+    const msg = e?.message || ''
+    if (name === 'NotAllowedError' || msg.includes('permission') || msg.includes('Permission')) {
       setError('permission_denied')
-    } else if (e.name === 'NotFoundError') {
+    } else if (name === 'NotFoundError' || msg.includes('NotFound')) {
       setError('no_camera')
     } else {
       setError('unknown')
     }
   }, [])
 
+  const showCamera = !error && !scanResult && !loading
   const { videoRef } = useBarcodeDetector({
     onScan: handleScan,
     onError: handleError,
-    active,
+    active: showCamera,
   })
 
   function resetScanner() {
+    setCameraKey(k => k + 1)
     setScanResult(null)
     setError('')
-    setActive(true)
+    setLoading(false)
   }
 
   return (
-    <div className="scanner-page">
+    <div className="scanner-page" key={cameraKey}>
       <div className="page-title">
         <div className="title-icon">📷</div>
         <h2>مسح منتج بالباركود</h2>
