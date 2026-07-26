@@ -985,26 +985,6 @@ body {
   box-shadow: var(--shadow);
 }
 
-.scanner-view {
-  width: 100%;
-  aspect-ratio: 4/3;
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: #000;
-  position: relative;
-}
-
-.scanner-view > div {
-  width: 100%;
-  height: 100%;
-}
-
-.scanner-view video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .scanner-instruction {
   text-align: center;
   color: var(--primary);

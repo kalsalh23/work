@@ -45,8 +45,8 @@ export default function BarcodeScanner() {
     if (!scanning || codes.length === 0) return
     const code = codes[0].rawValue
     setScanning(false)
-
     setLoading(true)
+
     const { data, error: dbError } = await supabase
       .from('products')
       .select('*')
@@ -123,26 +123,37 @@ export default function BarcodeScanner() {
         </div>
       ) : (
         <div className="scanner-view-wrapper">
-          <div className="scanner-view">
-            <Scanner
-              ref={scannerRef}
-              onScan={handleScan}
-              onError={(e) => {
-                if (e.name === 'NotAllowedError') {
-                  setError('permission_denied')
-                } else {
-                  setError('unknown')
-                }
-              }}
-              formats={[
-                'qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e',
-                'code_39', 'code_93', 'code_128', 'codabar', 'itf',
-                'data_matrix', 'aztec', 'pdf_417',
-              ]}
-              sound={false}
-              constraints={{ facingMode: 'environment' }}
-            />
-          </div>
+          <Scanner
+            ref={scannerRef}
+            onScan={handleScan}
+            onError={(e) => {
+              const kind = typeof e === 'object' && e !== null ? e.kind : ''
+              if (kind === 'permission-denied') {
+                setError('permission_denied')
+              } else if (kind === 'no-camera') {
+                setError('no_camera')
+              } else {
+                setError('unknown')
+              }
+            }}
+            formats={[
+              'qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e',
+              'code_39', 'code_93', 'code_128', 'codabar', 'itf',
+              'data_matrix', 'aztec', 'pdf_417',
+            ]}
+            sound={false}
+            constraints={{ facingMode: 'environment' }}
+            styles={{
+              container: {
+                width: '100%',
+                aspectRatio: '4/3',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                background: '#000',
+              },
+            }}
+            components={{ finder: false }}
+          />
           <p className="scanner-instruction">وجّه الكاميرا نحو الباركود</p>
         </div>
       )}
