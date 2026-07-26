@@ -754,6 +754,28 @@ body {
   margin-bottom: 8px;
 }
 
+.scan-result-notfound, .scan-result-error {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.scan-result-notfound h3 {
+  color: #e74c3c;
+  margin-bottom: 12px;
+}
+
+.scan-result-error h3 {
+  color: #e67e22;
+  margin-bottom: 12px;
+}
+
+.scanner-error-inline {
+  text-align: center;
+  padding: 40px 20px;
+  color: #e67e22;
+  font-size: 0.95rem;
+}
+
 .scanner-sub {
   font-size: 0.9rem;
   color: #999;

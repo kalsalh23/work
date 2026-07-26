@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
-import useBarcodeScanner from './useBarcodeScanner'
+import BarcodeScannerModal from './BarcodeScannerModal'
 
 export default function AddProduct({ onProductAdded }) {
   const [name, setName] = useState('')
@@ -15,7 +15,6 @@ export default function AddProduct({ onProductAdded }) {
   const [newCategory, setNewCategory] = useState('')
   const [loading, setLoading] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
-  const { startScanning, stopScanning } = useBarcodeScanner()
 
   useEffect(() => {
     loadCategories()
@@ -92,34 +91,6 @@ export default function AddProduct({ onProductAdded }) {
         }
       }
     })
-  }
-
-  function openScanner() {
-    setShowScanner(true)
-    setTimeout(() => {
-      startScanning(
-        'barcode-scanner',
-        (code) => {
-          setBarcode(code)
-          setShowScanner(false)
-        },
-        (err) => {
-          setShowScanner(false)
-          if (err === 'permission_denied') {
-            alert('تم رفض الإذن بالكاميرا. يمكنك كتابة الباركود يدوياً.')
-          } else if (err === 'no_camera') {
-            alert('لا توجد كاميرا متاحة على هذا الجهاز.')
-          } else {
-            alert('تعذر فتح الكاميرا. يرجى كتابة الباركود يدوياً.')
-          }
-        }
-      )
-    }, 500)
-  }
-
-  function closeScanner() {
-    stopScanning()
-    setShowScanner(false)
   }
 
   async function handleSubmit(e) {
@@ -213,7 +184,7 @@ export default function AddProduct({ onProductAdded }) {
               dir="ltr"
             />
           </div>
-          <button type="button" className="scan-btn" onClick={openScanner}>
+          <button type="button" className="scan-btn" onClick={() => setShowScanner(true)}>
             📷 مسح الباركود
           </button>
         </div>
@@ -289,13 +260,13 @@ export default function AddProduct({ onProductAdded }) {
       </form>
 
       {showScanner && (
-        <div className="scanner-overlay" onClick={closeScanner}>
-          <div className="scanner-modal" onClick={(e) => e.stopPropagation()}>
-            <button type="button" className="scanner-close" onClick={closeScanner}>&times;</button>
-            <p className="scanner-hint">وجّه الكاميرا نحو الباركود</p>
-            <div id="barcode-scanner" className="scanner-view" />
-          </div>
-        </div>
+        <BarcodeScannerModal
+          onScan={(code) => {
+            setBarcode(code)
+            setShowScanner(false)
+          }}
+          onClose={() => setShowScanner(false)}
+        />
       )}
     </div>
   )
