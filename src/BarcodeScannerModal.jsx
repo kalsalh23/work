@@ -1,8 +1,28 @@
-import { useState } from 'react'
-import { Scanner } from '@yudiel/react-qr-scanner'
+import { useState, useCallback } from 'react'
+import useBarcodeDetector from './useBarcodeDetector'
 
 export default function BarcodeScannerModal({ onScan, onClose }) {
   const [error, setError] = useState('')
+
+  const handleScan = useCallback((codes) => {
+    if (codes.length > 0) {
+      onScan(codes[0].rawValue)
+    }
+  }, [onScan])
+
+  const handleError = useCallback((e) => {
+    if (e.name === 'NotAllowedError' || e.message?.includes('permission')) {
+      setError('permission_denied')
+    } else {
+      setError('unknown')
+    }
+  }, [])
+
+  const { videoRef } = useBarcodeDetector({
+    onScan: handleScan,
+    onError: handleError,
+    active: true,
+  })
 
   return (
     <div className="scanner-overlay" onClick={onClose}>
@@ -18,38 +38,14 @@ export default function BarcodeScannerModal({ onScan, onClose }) {
             }</p>
           </div>
         ) : (
-          <Scanner
-            onScan={(codes) => {
-              if (codes.length > 0) {
-                onScan(codes[0].rawValue)
-              }
-            }}
-            onError={(e) => {
-              const kind = typeof e === 'object' && e !== null ? e.kind : ''
-              if (kind === 'permission-denied') {
-                setError('permission_denied')
-              } else {
-                setError('unknown')
-              }
-            }}
-            formats={[
-              'qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e',
-              'code_39', 'code_93', 'code_128', 'codabar', 'itf',
-              'data_matrix', 'aztec', 'pdf_417',
-            ]}
-            sound={false}
-            constraints={{ facingMode: 'environment' }}
-            styles={{
-              container: {
-                width: '100%',
-                aspectRatio: '4/3',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                background: '#000',
-              },
-            }}
-            components={{ finder: false }}
-          />
+          <div className="scanner-video-container">
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+            />
+          </div>
         )}
       </div>
     </div>

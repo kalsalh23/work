@@ -1,13 +1,12 @@
-import { useState, useRef, useCallback } from 'react'
-import { Scanner } from '@yudiel/react-qr-scanner'
+import { useState, useCallback } from 'react'
 import { supabase } from './supabaseClient'
+import useBarcodeDetector from './useBarcodeDetector'
 
 export default function BarcodeScanner() {
   const [scanResult, setScanResult] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [scanning, setScanning] = useState(true)
-  const scannerRef = useRef(null)
+  const [active, setActive] = useState(true)
 
   function playBeep() {
     try {
@@ -42,11 +41,11 @@ export default function BarcodeScanner() {
   }
 
   const handleScan = useCallback(async (codes) => {
-    if (!scanning || codes.length === 0) return
-    const code = codes[0].rawValue
-    setScanning(false)
+    if (codes.length === 0) return
+    setActive(false)
     setLoading(true)
 
+    const code = codes[0].rawValue
     const { data, error: dbError } = await supabase
       .from('products')
       .select('*')
@@ -67,12 +66,28 @@ export default function BarcodeScanner() {
       setScanResult({ type: 'not_found', code })
       playErrorBeep()
     }
-  }, [scanning])
+  }, [])
+
+  const handleError = useCallback((e) => {
+    if (e.name === 'NotAllowedError' || e.message?.includes('permission')) {
+      setError('permission_denied')
+    } else if (e.name === 'NotFoundError') {
+      setError('no_camera')
+    } else {
+      setError('unknown')
+    }
+  }, [])
+
+  const { videoRef } = useBarcodeDetector({
+    onScan: handleScan,
+    onError: handleError,
+    active,
+  })
 
   function resetScanner() {
     setScanResult(null)
     setError('')
-    setScanning(true)
+    setActive(true)
   }
 
   return (
@@ -87,6 +102,8 @@ export default function BarcodeScanner() {
           <p>{
             error === 'permission_denied'
               ? '⛔ تم رفض الإذن بالكاميرا.'
+              : error === 'no_camera'
+              ? '📷 لا توجد كاميرا متاحة.'
               : '⚠️ تعذر فتح الكاميرا.'
           }</p>
           <button onClick={resetScanner}>إعادة المحاولة</button>
@@ -123,37 +140,14 @@ export default function BarcodeScanner() {
         </div>
       ) : (
         <div className="scanner-view-wrapper">
-          <Scanner
-            ref={scannerRef}
-            onScan={handleScan}
-            onError={(e) => {
-              const kind = typeof e === 'object' && e !== null ? e.kind : ''
-              if (kind === 'permission-denied') {
-                setError('permission_denied')
-              } else if (kind === 'no-camera') {
-                setError('no_camera')
-              } else {
-                setError('unknown')
-              }
-            }}
-            formats={[
-              'qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e',
-              'code_39', 'code_93', 'code_128', 'codabar', 'itf',
-              'data_matrix', 'aztec', 'pdf_417',
-            ]}
-            sound={false}
-            constraints={{ facingMode: 'environment' }}
-            styles={{
-              container: {
-                width: '100%',
-                aspectRatio: '4/3',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                background: '#000',
-              },
-            }}
-            components={{ finder: false }}
-          />
+          <div className="scanner-video-container">
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+            />
+          </div>
           <p className="scanner-instruction">وجّه الكاميرا نحو الباركود</p>
         </div>
       )}
