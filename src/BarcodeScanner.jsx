@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode'
 import { supabase } from './supabaseClient'
 
 export default function BarcodeScanner() {
@@ -14,27 +15,47 @@ export default function BarcodeScanner() {
   }, [])
 
   function startScanner() {
-    import('html5-qrcode').then(({ Html5Qrcode }) => {
-      const scanner = new Html5Qrcode('barcode-scanner-page')
-      scannerRef.current = scanner
+    const scanner = new Html5Qrcode('barcode-scanner-page', {
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.CODE_93,
+        Html5QrcodeSupportedFormats.CODABAR,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.ITF,
+        Html5QrcodeSupportedFormats.PDF_417,
+        Html5QrcodeSupportedFormats.DATA_MATRIX,
+        Html5QrcodeSupportedFormats.AZTEC,
+        Html5QrcodeSupportedFormats.MAXICODE,
+        Html5QrcodeSupportedFormats.RSS_14,
+        Html5QrcodeSupportedFormats.RSS_EXPANDED,
+        Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+      ],
+      useBarCodeDetectorIfSupported: true,
+    })
+    scannerRef.current = scanner
 
-      scanner.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 150 } },
-        (decodedText) => {
-          scanner.stop().catch(() => {})
-          findProduct(decodedText)
-        },
-        () => {}
-      ).catch((err) => {
-        if (err?.includes('NotAllowedError')) {
-          setError('permission_denied')
-        } else if (err?.includes('NotFoundError')) {
-          setError('no_camera')
-        } else {
-          setError('unknown')
-        }
-      })
+    scanner.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 280, height: 120 } },
+      (decodedText) => {
+        scanner.stop().catch(() => {})
+        findProduct(decodedText)
+      },
+      () => {}
+    ).catch((err) => {
+      const msg = String(err)
+      if (msg.includes('NotAllowedError')) {
+        setError('permission_denied')
+      } else if (msg.includes('NotFoundError')) {
+        setError('no_camera')
+      } else {
+        setError('unknown')
+      }
     })
   }
 
