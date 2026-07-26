@@ -30,9 +30,11 @@ export default function Login({ onLogin }) {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="logo-icon">S</div>
-        <h1>thestore</h1>
-        <h2>تسجيل دخول</h2>
+        <div className="login-logo">
+          <img src="/syria-logo.svg" alt="سوريا" className="login-logo-img" />
+        </div>
+        <h1>مرحبًا بك</h1>
+        <p className="login-subtitle">سجّل الدخول للمتابعة.</p>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <input

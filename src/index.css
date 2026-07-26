@@ -108,34 +108,48 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.login-card .logo-icon {
-  width: 68px;
-  height: 68px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  border-radius: var(--radius-lg);
+.login-card .login-logo {
+  margin: 0 auto 22px;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 18px;
-  font-size: 2rem;
-  color: var(--slate);
-  font-weight: 800;
-  box-shadow: var(--shadow-gold);
+  animation: loginFadeIn 0.8s ease-out;
+}
+
+.login-card .login-logo-img {
+  width: 72px;
+  height: 72px;
+  display: block;
+  filter: drop-shadow(0 4px 16px rgba(212, 175, 55, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.login-card .login-logo-img:hover {
+  transform: scale(1.03);
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .login-card h1 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--slate);
-  margin-bottom: 4px;
-  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+  animation: loginFadeIn 0.8s ease-out 0.1s both;
 }
 
-.login-card h2 {
-  font-size: 1rem;
+.login-card .login-subtitle {
+  font-size: 0.95rem;
   color: var(--text-secondary);
   margin-bottom: 2rem;
   font-weight: 400;
+  animation: loginFadeIn 0.8s ease-out 0.2s both;
 }
 
 .login-card .input-group {
