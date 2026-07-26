@@ -14,8 +14,13 @@ export default function Dashboard({ onLogout }) {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1>thestore</h1>
-        <button className="logout-btn" onClick={onLogout}>تسجيل خروج</button>
+        <div className="brand">
+          <div className="brand-icon">S</div>
+          <h1>thestore</h1>
+        </div>
+        <button className="logout-btn" onClick={onLogout}>
+          ← خروج
+        </button>
       </div>
 
       <div className="dashboard-content">
@@ -33,18 +38,21 @@ export default function Dashboard({ onLogout }) {
           className={tab === 'add' ? 'active' : ''}
           onClick={() => setTab('add')}
         >
+          <span className="nav-icon">＋</span>
           اضافة منتج
         </button>
         <button
           className={tab === 'scan' ? 'active' : ''}
           onClick={() => setTab('scan')}
         >
-          📷 مسح المنتج
+          <span className="nav-icon">📷</span>
+          مسح المنتج
         </button>
         <button
           className={tab === 'products' ? 'active' : ''}
           onClick={() => setTab('products')}
         >
+          <span className="nav-icon">📦</span>
           المنتجات
         </button>
       </nav>

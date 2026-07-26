@@ -156,106 +156,128 @@ export default function AddProduct({ onProductAdded }) {
 
   return (
     <div className="add-product">
-      <h2>اضافة منتج</h2>
+      <div className="page-title">
+        <div className="title-icon">＋</div>
+        <h2>اضافة منتج</h2>
+      </div>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="اسم القطعة"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-
-        <input
-          type="number"
-          placeholder="عدد القطع"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          required
-        />
-
-        <div className="barcode-row">
-          <div className="barcode-input-wrap">
-            <input
-              type="text"
-              placeholder="الباركود"
-              value={barcode}
-              onChange={(e) => setBarcode(e.target.value)}
-              dir="ltr"
-            />
-          </div>
-          <button type="button" className="scan-btn" onClick={() => setShowScanner(true)}>
-            📷 مسح الباركود
-          </button>
+        <div className="form-card">
+          <span className="card-label">اسم القطعة</span>
+          <input
+            type="text"
+            placeholder="أدخل اسم القطعة"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
         </div>
 
-        <div className="image-upload">
-          <label className="image-label multi">
-            {imagePreviews.length > 0 ? (
-              <span>اضغط لاضافة المزيد من الصور</span>
-            ) : (
-              <span>اضغط لاختيار صور</span>
+        <div className="form-card">
+          <span className="card-label">عدد القطع</span>
+          <input
+            type="number"
+            placeholder="أدخل العدد"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-card">
+          <span className="card-label">الباركود</span>
+          <div className="barcode-row">
+            <div className="barcode-input-wrap">
+              <input
+                type="text"
+                placeholder="أدخل الباركود أو امسحه"
+                value={barcode}
+                onChange={(e) => setBarcode(e.target.value)}
+                dir="ltr"
+              />
+            </div>
+            <button type="button" className="scan-btn" onClick={() => setShowScanner(true)}>
+              📷 مسح
+            </button>
+          </div>
+        </div>
+
+        <div className="form-card">
+          <span className="card-label">الصور</span>
+          <div className="image-upload">
+            <label className="image-label multi">
+              <span className="upload-icon">📸</span>
+              {imagePreviews.length > 0 ? (
+                <span>اضغط لاضافة المزيد من الصور</span>
+              ) : (
+                <span>اضغط لاختيار صور</span>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImages}
+                hidden
+              />
+            </label>
+            {imagePreviews.length > 0 && (
+              <div className="image-previews">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="preview-item">
+                    <img src={preview} alt={`صورة ${index + 1}`} />
+                    <button type="button" className="remove-img-small" onClick={() => removeImage(index)}>
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImages}
-              hidden
-            />
-          </label>
-          {imagePreviews.length > 0 && (
-            <div className="image-previews">
-              {imagePreviews.map((preview, index) => (
-                <div key={index} className="preview-item">
-                  <img src={preview} alt={`صورة ${index + 1}`} />
-                  <button type="button" className="remove-img-small" onClick={() => removeImage(index)}>
-                    &times;
-                  </button>
-                </div>
+          </div>
+        </div>
+
+        <div className="form-card">
+          <span className="card-label">الصنف</span>
+          <div className="category-row">
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              required
+            >
+              <option value="">اختر صنف</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
+            </select>
+            <button type="button" onClick={() => setShowAddCategory(true)}>
+              ＋ صنف
+            </button>
+          </div>
+
+          {showAddCategory && (
+            <div className="add-category-inline">
+              <input
+                type="text"
+                placeholder="اسم الصنف الجديد"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+              />
+              <button type="button" onClick={handleAddCategory}>حفظ</button>
+              <button type="button" onClick={() => setShowAddCategory(false)}>إلغاء</button>
             </div>
           )}
         </div>
 
-        <div className="category-row">
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            required
-          >
-            <option value="">اختر صنف</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
-          <button type="button" onClick={() => setShowAddCategory(true)}>
-            اضافة صنف
-          </button>
+        <div className="form-card">
+          <span className="card-label">تفاصيل اضافية</span>
+          <textarea
+            placeholder="أدخل تفاصيل اضافية (اختياري)"
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            rows={3}
+          />
         </div>
 
-        {showAddCategory && (
-          <div className="add-category-inline">
-            <input
-              type="text"
-              placeholder="اسم الصنف الجديد"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-            />
-            <button type="button" onClick={handleAddCategory}>حفظ الصنف</button>
-            <button type="button" onClick={() => setShowAddCategory(false)}>إلغاء</button>
-          </div>
-        )}
-
-        <textarea
-          placeholder="تفاصيل اضافية"
-          value={details}
-          onChange={(e) => setDetails(e.target.value)}
-          rows={3}
-        />
-
         <button type="submit" disabled={loading}>
-          {loading ? 'جاري الحفظ...' : 'حفظ'}
+          {loading ? 'جاري الحفظ...' : '✓ حفظ المنتج'}
         </button>
       </form>
 

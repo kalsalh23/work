@@ -89,7 +89,10 @@ export default function Products() {
 
   return (
     <div className="products-page">
-      <h2>المنتجات</h2>
+      <div className="page-title">
+        <div className="title-icon">📦</div>
+        <h2>المنتجات</h2>
+      </div>
 
       <div className="filter-bar">
         <select value={filterCat} onChange={(e) => setFilterCat(e.target.value)}>
@@ -101,7 +104,10 @@ export default function Products() {
       </div>
 
       {loading ? (
-        <p className="loading">جاري التحميل...</p>
+        <div className="loading">
+          <div className="spinner" />
+          <p>جاري التحميل...</p>
+        </div>
       ) : filtered.length === 0 ? (
         <p className="empty">لا توجد منتجات</p>
       ) : (
@@ -116,10 +122,15 @@ export default function Products() {
                     onClick={() => setLightbox({ product, index: 0 })}
                   />
                 ) : (
-                  <div className="no-image">لا توجد صورة</div>
+                  <div className="no-image">
+                    <span className="no-img-icon">🖼</span>
+                    لا توجد صورة
+                  </div>
                 )}
                 {images(product).length > 1 && (
-                  <span className="image-count">{images(product).length} صور</span>
+                  <span className="image-count">
+                    +{images(product).length - 1}
+                  </span>
                 )}
               </div>
               <div className="product-info">
@@ -141,14 +152,16 @@ export default function Products() {
                   </>
                 ) : (
                   <>
+                    <span className="category-badge">{product.categories?.name}</span>
                     <h3>{product.name}</h3>
-                    <p>العدد: {product.quantity}</p>
-                    <p>الصنف: {product.categories?.name}</p>
+                    <div className="product-meta">
+                      <span>📦 {product.quantity}</span>
+                    </div>
                     {product.details && <p className="details">{product.details}</p>}
-                    {product.barcode && <p className="barcode-label">الباركود: {product.barcode}</p>}
+                    {product.barcode && <p className="barcode-label">🔲 {product.barcode}</p>}
                     <div className="product-actions">
-                      <button className="edit-btn" onClick={() => startEdit(product)}>تعديل</button>
-                      <button className="delete-btn" onClick={() => handleDelete(product.id)}>حذف</button>
+                      <button className="edit-btn" onClick={() => startEdit(product)}>✎ تعديل</button>
+                      <button className="delete-btn" onClick={() => handleDelete(product.id)}>🗑 حذف</button>
                     </div>
                   </>
                 )}

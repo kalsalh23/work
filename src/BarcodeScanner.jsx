@@ -3,7 +3,7 @@ import { Scanner } from '@yudiel/react-qr-scanner'
 import { supabase } from './supabaseClient'
 
 export default function BarcodeScanner() {
-  const [scanResult, setScanResult] = useState(null) // null | { type: 'found', product } | { type: 'not_found', code }
+  const [scanResult, setScanResult] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [scanning, setScanning] = useState(true)
@@ -77,7 +77,10 @@ export default function BarcodeScanner() {
 
   return (
     <div className="scanner-page">
-      <h2>📷 مسح منتج بالباركود</h2>
+      <div className="page-title">
+        <div className="title-icon">📷</div>
+        <h2>مسح منتج بالباركود</h2>
+      </div>
 
       {error ? (
         <div className="scanner-error">
@@ -97,7 +100,7 @@ export default function BarcodeScanner() {
                 <img src={scanResult.product.images[0]} alt={scanResult.product.name} />
               )}
               <p><strong>{scanResult.product.name}</strong></p>
-              <p>العدد: {scanResult.product.quantity}</p>
+              <p>📦 {scanResult.product.quantity}</p>
               {scanResult.product.details && <p>{scanResult.product.details}</p>}
             </div>
           ) : scanResult.type === 'not_found' ? (

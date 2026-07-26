@@ -30,25 +30,34 @@ export default function Login({ onLogin }) {
   return (
     <div className="login-container">
       <div className="login-card">
+        <div className="logo-icon">S</div>
         <h1>thestore</h1>
         <h2>تسجيل دخول</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="البريد الإلكتروني"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="كلمة السر"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {error && <p className="error">{error}</p>}
-          <button type="submit" disabled={loading}>{loading ? 'جاري التحقق...' : 'دخول'}</button>
+          <div className="input-group">
+            <input
+              type="email"
+              placeholder="البريد الإلكتروني"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <span className="input-icon">✉</span>
+          </div>
+          <div className="input-group">
+            <input
+              type="password"
+              placeholder="كلمة السر"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <span className="input-icon">🔒</span>
+          </div>
+          {error && <p className="error">⚠ {error}</p>}
+          <button type="submit" disabled={loading}>
+            {loading ? 'جاري التحقق...' : 'دخول'}
+          </button>
         </form>
       </div>
     </div>
