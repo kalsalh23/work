@@ -199,21 +199,30 @@ export default function AddProduct({ onProductAdded }) {
         <div className="form-card">
           <span className="card-label">الصور</span>
           <div className="image-upload">
-            <label className="image-label multi">
-              <span className="upload-icon">📸</span>
-              {imagePreviews.length > 0 ? (
-                <span>اضغط لاضافة المزيد من الصور</span>
-              ) : (
-                <span>اضغط لاختيار صور</span>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImages}
-                hidden
-              />
-            </label>
+            <div className="image-buttons">
+              <label className="image-label">
+                <span className="upload-icon">📂</span>
+                <span>اختيار من الملفات</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImages}
+                  hidden
+                />
+              </label>
+              <label className="image-label">
+                <span className="upload-icon">📸</span>
+                <span>تصوير مباشر</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleImages}
+                  hidden
+                />
+              </label>
+            </div>
             {imagePreviews.length > 0 && (
               <div className="image-previews">
                 {imagePreviews.map((preview, index) => (
