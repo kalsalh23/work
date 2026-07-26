@@ -1,1 +1,0 @@
-{"query": "ALTER TABLE products ADD COLUMN IF NOT EXISTS barcode TEXT UNIQUE DEFAULT NULL;"}

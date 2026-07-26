@@ -41,5 +41,4 @@ CREATE POLICY "Enable select for anon" ON admins FOR SELECT USING (true);
 -- CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'product-images');
 -- CREATE POLICY "Authenticated Upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'product-images');
 
--- Add barcode column to products
-ALTER TABLE products ADD COLUMN IF NOT EXISTS barcode TEXT UNIQUE DEFAULT NULL;
+-- barcode column removed

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import AddProduct from './AddProduct'
 import Products from './Products'
-import BarcodeScanner from './BarcodeScanner'
 
 export default function Dashboard({ onLogout }) {
   const [tab, setTab] = useState('add')
@@ -26,8 +25,6 @@ export default function Dashboard({ onLogout }) {
       <div className="dashboard-content">
         {tab === 'add' ? (
           <AddProduct onProductAdded={handleProductAdded} />
-        ) : tab === 'scan' ? (
-          <BarcodeScanner key={refreshKey} />
         ) : (
           <Products key={refreshKey} onUpdate={handleProductAdded} />
         )}
@@ -40,13 +37,6 @@ export default function Dashboard({ onLogout }) {
         >
           <span className="nav-icon">＋</span>
           اضافة منتج
-        </button>
-        <button
-          className={tab === 'scan' ? 'active' : ''}
-          onClick={() => setTab('scan')}
-        >
-          <span className="nav-icon">📷</span>
-          مسح المنتج
         </button>
         <button
           className={tab === 'products' ? 'active' : ''}
