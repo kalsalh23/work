@@ -165,6 +165,38 @@ export default function AddProduct({ onProductAdded }) {
         </div>
 
         <div className="form-card">
+          <span className="card-label">الصنف</span>
+          <div className="category-row">
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              required
+            >
+              <option value="">اختر صنف</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+            <button type="button" onClick={() => setShowAddCategory(true)}>
+              ＋ صنف
+            </button>
+          </div>
+
+          {showAddCategory && (
+            <div className="add-category-inline">
+              <input
+                type="text"
+                placeholder="اسم الصنف الجديد"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+              />
+              <button type="button" onClick={handleAddCategory}>حفظ</button>
+              <button type="button" onClick={() => setShowAddCategory(false)}>إلغاء</button>
+            </div>
+          )}
+        </div>
+
+        <div className="form-card">
           <span className="card-label">الصور</span>
           <div className="image-upload">
             <label className="image-label multi">
@@ -195,38 +227,6 @@ export default function AddProduct({ onProductAdded }) {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="form-card">
-          <span className="card-label">الصنف</span>
-          <div className="category-row">
-            <select
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              required
-            >
-              <option value="">اختر صنف</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-            <button type="button" onClick={() => setShowAddCategory(true)}>
-              ＋ صنف
-            </button>
-          </div>
-
-          {showAddCategory && (
-            <div className="add-category-inline">
-              <input
-                type="text"
-                placeholder="اسم الصنف الجديد"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-              />
-              <button type="button" onClick={handleAddCategory}>حفظ</button>
-              <button type="button" onClick={() => setShowAddCategory(false)}>إلغاء</button>
-            </div>
-          )}
         </div>
 
         <div className="form-card">
