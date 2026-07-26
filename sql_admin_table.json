@@ -1,0 +1,1 @@
+{"query": "CREATE TABLE IF NOT EXISTS admins (id BIGSERIAL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW()); INSERT INTO admins (email, password) VALUES ('yousf@gmail.com', '123456') ON CONFLICT (email) DO NOTHING;"}

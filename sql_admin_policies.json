@@ -1,0 +1,1 @@
+{"query": "ALTER TABLE admins ENABLE ROW LEVEL SECURITY; DROP POLICY IF EXISTS \"Enable select for anon\" ON admins; CREATE POLICY \"Enable select for anon\" ON admins FOR SELECT USING (true);"}
