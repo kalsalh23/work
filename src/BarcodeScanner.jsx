@@ -2,6 +2,14 @@ import { useState, useCallback } from 'react'
 import { supabase } from './supabaseClient'
 import useBarcodeDetector from './useBarcodeDetector'
 
+const ERROR_MESSAGES = {
+  permission_denied: '⛔ تم رفض الإذن بالكاميرا.',
+  no_camera: '📷 لا توجد كاميرا متاحة.',
+  in_use: '📷 الكاميرا قيد الاستخدام حالياً.',
+  invalid_constraints: '⚠️ الكاميرا لا تدعم الوضع الخلفي.',
+  unknown: '⚠️ تعذر فتح الكاميرا.',
+}
+
 export default function BarcodeScanner() {
   const [scanResult, setScanResult] = useState(null)
   const [error, setError] = useState('')
@@ -72,8 +80,12 @@ export default function BarcodeScanner() {
     const msg = e?.message || ''
     if (name === 'NotAllowedError' || msg.includes('permission') || msg.includes('Permission')) {
       setError('permission_denied')
-    } else if (name === 'NotFoundError' || msg.includes('NotFound')) {
+    } else if (name === 'NotFoundError' || name === 'NotSupportedError' || msg.includes('NotFound') || msg.includes('not available')) {
       setError('no_camera')
+    } else if (name === 'NotReadableError' || msg.includes('in use') || msg.includes('busy')) {
+      setError('in_use')
+    } else if (name === 'OverconstrainedError' || name === 'TypeError') {
+      setError('invalid_constraints')
     } else {
       setError('unknown')
     }
@@ -102,13 +114,13 @@ export default function BarcodeScanner() {
 
       {error ? (
         <div className="scanner-error">
-          <p>{
-            error === 'permission_denied'
-              ? '⛔ تم رفض الإذن بالكاميرا.'
-              : error === 'no_camera'
-              ? '📷 لا توجد كاميرا متاحة.'
-              : '⚠️ تعذر فتح الكاميرا.'
-          }</p>
+          <p>{ERROR_MESSAGES[error] || ERROR_MESSAGES.unknown}</p>
+          <p className="scanner-error-hint">
+            {error === 'permission_denied' && 'يرجى السماح بالوصول إلى الكاميرا في إعدادات المتصفح.'}
+            {error === 'invalid_constraints' && 'حاول إعادة المحاولة، قد تنجح في المرة القادمة.'}
+            {error === 'in_use' && 'تأكد من إغلاق أي تطبيق آخر يستخدم الكاميرا.'}
+            {error === 'no_camera' && 'تأكد من توصيل كاميرا بجهازك.'}
+          </p>
           <button onClick={resetScanner}>إعادة المحاولة</button>
         </div>
       ) : scanResult ? (

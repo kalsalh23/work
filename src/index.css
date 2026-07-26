@@ -1322,6 +1322,13 @@ body {
   font-size: 1rem;
 }
 
+.scanner-error-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
 .scanner-error button {
   padding: 12px 28px;
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));

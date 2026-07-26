@@ -7,7 +7,23 @@ const FORMATS = [
   'data_matrix', 'aztec', 'pdf_417',
 ]
 
-export default function useBarcodeDetector({ onScan, onError, active = true }) {
+const ERR_UNKNOWN = 'unknown'
+const ERR_PERMISSION = 'permission_denied'
+const ERR_NO_CAMERA = 'no_camera'
+const ERR_IN_USE = 'in_use'
+const ERR_INVALID = 'invalid_constraints'
+
+function classifyError(e) {
+  const name = e?.name || ''
+  const msg = e?.message || ''
+  if (name === 'NotAllowedError' || msg.includes('permission') || msg.includes('Permission')) return ERR_PERMISSION
+  if (name === 'NotFoundError' || msg.includes('NotFound')) return ERR_NO_CAMERA
+  if (name === 'NotReadableError' || msg.includes('in use') || msg.includes('busy')) return ERR_IN_USE
+  if (name === 'OverconstrainedError' || name === 'TypeError') return ERR_INVALID
+  return ERR_UNKNOWN
+}
+
+export default function useBarcodeDetector({ onError, onScan, active = true }) {
   const videoRef = useRef(null)
   const streamRef = useRef(null)
   const detectorRef = useRef(null)
@@ -31,15 +47,21 @@ export default function useBarcodeDetector({ onScan, onError, active = true }) {
 
   const start = useCallback(async () => {
     stop()
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      onErrorRef.current?.(Object.assign(new Error('camera API not available'), { name: 'NotSupportedError' }))
+      return
+    }
+
     const video = videoRef.current
     if (!video) {
-      onErrorRef.current?.(new Error('video_element_not_found'))
+      onErrorRef.current?.(Object.assign(new Error('video element not in DOM'), { name: 'NotSupportedError' }))
       return
     }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
+        video: { facingMode: { ideal: 'environment' } },
         audio: false,
       })
       streamRef.current = stream
@@ -52,17 +74,15 @@ export default function useBarcodeDetector({ onScan, onError, active = true }) {
       ;(async function loop() {
         while (runningRef.current) {
           const v = videoRef.current
-          if (v && v.videoWidth > 0 && v.videoHeight > 0) {
+          if (v && v.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
             try {
               const codes = await detectorRef.current.detect(v)
               if (codes.length > 0 && runningRef.current) {
                 onScanRef.current?.(codes)
               }
-            } catch (_) {
-              /* detection error on a single frame, continue */
-            }
+            } catch (_) {}
           }
-          await new Promise(r => setTimeout(r, 500))
+          await new Promise(r => setTimeout(r, 400))
         }
       })()
     } catch (e) {
@@ -71,11 +91,9 @@ export default function useBarcodeDetector({ onScan, onError, active = true }) {
   }, [stop])
 
   useEffect(() => {
-    if (active) {
-      start()
-    }
-    return () => { stop() }
+    if (active) start()
+    return () => stop()
   }, [active, start, stop])
 
-  return { videoRef, start, stop, streamRef }
+  return { videoRef, start, stop, streamRef, classifyError }
 }
