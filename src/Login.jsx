@@ -33,7 +33,7 @@ export default function Login({ onLogin }) {
         <div className="login-logo">
           <img src="/syria-logo.svg" alt="سوريا" className="login-logo-img" />
         </div>
-        <h1>مرحبًا بك</h1>
+        <h1>الجمهورية العربية السورية</h1>
         <p className="login-subtitle">سجّل الدخول للمتابعة.</p>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
