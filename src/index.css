@@ -238,6 +238,64 @@ body {
   border: 1px solid rgba(220, 38, 38, 0.15);
 }
 
+.success-msg {
+  color: var(--success);
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--success-bg);
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(30, 58, 43, 0.15);
+  line-height: 1.5;
+}
+
+.loading-text {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 0.95rem;
+}
+
+.forgot-link {
+  background: none !important;
+  color: var(--slate-muted) !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  padding: 10px 0 !important;
+  margin-top: 4px !important;
+  border: none !important;
+  cursor: pointer;
+  transition: color 0.2s;
+  box-shadow: none !important;
+}
+
+.forgot-link:hover {
+  color: var(--gold-dark) !important;
+  transform: none !important;
+}
+
+.back-btn {
+  background: none !important;
+  color: var(--slate-muted) !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  padding: 10px 0 !important;
+  margin-top: 4px !important;
+  border: none !important;
+  cursor: pointer;
+  transition: color 0.2s;
+  box-shadow: none !important;
+}
+
+.back-btn:hover {
+  color: var(--gold-dark) !important;
+  transform: none !important;
+}
+
 /* ==============================  DASHBOARD  ============================== */
 
 .dashboard {
