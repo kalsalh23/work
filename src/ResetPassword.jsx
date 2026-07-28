@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,6 +9,7 @@ export default function ResetPassword() {
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [ready, setReady] = useState(false)
+  const userEmail = useRef(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -20,7 +21,11 @@ export default function ResetPassword() {
 
     if (type === 'recovery' && accessToken && refreshToken) {
       supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
-        .then(() => setReady(true))
+        .then(async () => {
+          const { data } = await supabase.auth.getUser()
+          if (data?.user?.email) userEmail.current = data.user.email
+          setReady(true)
+        })
         .catch(() => setError('رابط إعادة التعيين غير صالح أو منتهي الصلاحية'))
     } else {
       setError('رابط غير صالح')
@@ -44,6 +49,9 @@ export default function ResetPassword() {
     const { error: updateError } = await supabase.auth.updateUser({ password })
 
     if (!updateError) {
+      if (userEmail.current) {
+        await supabase.from('admins').update({ password }).eq('email', userEmail.current)
+      }
       setSuccess(true)
       setTimeout(() => navigate('/'), 3000)
     } else {
