@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import AddProduct from './AddProduct'
 import Products from './Products'
+import WorkDoc from './WorkDoc'
 
 export default function Dashboard({ onLogout }) {
   const [tab, setTab] = useState('add')
@@ -25,8 +26,10 @@ export default function Dashboard({ onLogout }) {
       <div className="dashboard-content">
         {tab === 'add' ? (
           <AddProduct onProductAdded={handleProductAdded} />
-        ) : (
+        ) : tab === 'products' ? (
           <Products key={refreshKey} onUpdate={handleProductAdded} />
+        ) : (
+          <WorkDoc />
         )}
       </div>
 
@@ -44,6 +47,13 @@ export default function Dashboard({ onLogout }) {
         >
           <span className="nav-icon">📦</span>
           المنتجات
+        </button>
+        <button
+          className={tab === 'workdoc' ? 'active' : ''}
+          onClick={() => setTab('workdoc')}
+        >
+          <span className="nav-icon">📋</span>
+          توثيق العمل
         </button>
       </nav>
     </div>

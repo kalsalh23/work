@@ -1152,3 +1152,245 @@ body {
 .lightbox-nav button:hover {
   background: rgba(255,255,255,0.2);
 }
+
+/* ==============================  WORK DOC (توثيق العمل)  ============================== */
+
+.workdoc {
+  animation: fadeSlideUp 0.4s ease-out;
+}
+
+.workdoc-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .workdoc-layout {
+    flex-direction: column;
+  }
+}
+
+.workdoc-form {
+  flex: 1;
+  min-width: 0;
+}
+
+.workdoc .form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.workdoc .form-row .form-card {
+  flex: 1;
+}
+
+.workdoc .form-card {
+  background: var(--card);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+
+.workdoc .form-card .card-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.workdoc .form-card .card-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to left, var(--border-gold), transparent);
+  margin-right: 8px;
+}
+
+.workdoc input,
+.workdoc select,
+.workdoc textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s;
+  background: var(--jasmine-light);
+  color: var(--text);
+  font-family: inherit;
+}
+
+.workdoc input:focus,
+.workdoc select:focus,
+.workdoc textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px var(--gold-bg);
+  background: white;
+}
+
+.workdoc input[type="date"] {
+  direction: ltr;
+  text-align: right;
+}
+
+/* ====== PREVIEW ====== */
+
+.workdoc-preview-section {
+  width: 420px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+}
+
+@media (max-width: 900px) {
+  .workdoc-preview-section {
+    width: 100%;
+    position: static;
+  }
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  padding: 10px 16px;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.preview-icon {
+  font-size: 1.2rem;
+}
+
+.workdoc-preview {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  font-size: 0.85rem;
+  color: #1e293b;
+  line-height: 1.6;
+  direction: rtl;
+}
+
+.workdoc-preview .doc-header {
+  text-align: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--gold);
+}
+
+.workdoc-preview .doc-header h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--slate);
+  margin-bottom: 4px;
+}
+
+.workdoc-preview .doc-header p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.doc-table td {
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+}
+
+.doc-table .doc-label {
+  font-weight: 700;
+  background: #f8fafc;
+  width: 35%;
+  color: var(--slate);
+}
+
+.doc-section {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.doc-section h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  margin-bottom: 6px;
+  padding-right: 8px;
+  border-right: 3px solid var(--gold);
+}
+
+.doc-section p {
+  font-size: 0.85rem;
+  color: #475569;
+  white-space: pre-wrap;
+}
+
+.doc-images {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.doc-images img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+/* ====== PDF BUTTON ====== */
+
+.pdf-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--slate);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 800;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.pdf-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+.pdf-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
