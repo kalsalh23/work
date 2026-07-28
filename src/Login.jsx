@@ -36,7 +36,13 @@ export default function Login({ onLogin }) {
         setError('ليس لديك صلاحية الدخول')
       }
     } else {
-      setError('البريد الإلكتروني أو كلمة السر خطأ')
+      if (signInError.message?.includes('Email not confirmed')) {
+        setError('البريد الإلكتروني غير مؤكد، يرجى التحقق من بريدك')
+      } else if (signInError.message?.includes('Invalid login credentials')) {
+        setError('البريد الإلكتروني أو كلمة السر خطأ')
+      } else {
+        setError(signInError.message)
+      }
     }
     setLoading(false)
   }

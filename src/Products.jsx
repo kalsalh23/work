@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
 
-export default function Products() {
+export default function Products({ onUpdate }) {
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [filterCat, setFilterCat] = useState('all')

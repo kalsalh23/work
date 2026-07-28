@@ -49,9 +49,6 @@ export default function ResetPassword() {
     const { error: updateError } = await supabase.auth.updateUser({ password })
 
     if (!updateError) {
-      if (userEmail.current) {
-        await supabase.from('admins').update({ password }).eq('email', userEmail.current)
-      }
       setSuccess(true)
       setTimeout(() => navigate('/'), 3000)
     } else {
