@@ -227,6 +227,7 @@ export default function WorkDoc() {
             <div style="flex:0 0 68px; display:flex; justify-content:center; align-items:center">${eagleSvg(60)}</div>
             <div style="flex:1; text-align:right; font-size:10px; color:#0F172A; line-height:1.3; font-weight:700; font-family:Cairo, sans-serif"><div>الجمهورية العربية السورية</div><div>قصر تشرين</div></div>
           </div>
+          <div style="text-align:center; font-size:9px; color:#5C4A1F; line-height:1.6; margin:6px 0 10px; font-style:italic; background:#FFFBEB; padding:7px 10px; border-radius:8px; border:1px solid rgba(212,175,55,0.18)">«هديّةٌ تُهدى، ومحبّةٌ تُروى، وأثرٌ طيّبٌ يبقى؛ فبعضُ الهدايا تُلامس اليد، وأجملُها ما يبلغ القلب، وقد قال ﷺ: «تَهَادَوْا تَحَابُّوا».»</div>
           <div style="text-align:center; margin-bottom:10px">
             <h2 style="margin:0; color:#0F172A; font-size:14px">وثيقة ${index+1} / ${allDocs.length} - توثيق هدية</h2>
             <p style="margin:3px 0 0; color:#64748B; font-size:10px">التاريخ: ${doc.form.docDate || ''} • الرقم: ${doc.form.deliveryNumber || '-'} • صفحة ${index+1} من ${allDocs.length}</p>
@@ -397,11 +398,12 @@ export default function WorkDoc() {
           <div style={{display:'flex', flexDirection:'column', gap:14}}>
             {docs.map((doc, idx)=>(
               <div key={doc.id} className="doc-page" style={{background:'white', borderRadius:16, border:'2px solid #D4AF37', padding:16, boxShadow:'0 4px 16px rgba(15,23,42,0.07)', position:'relative', breakInside:'avoid'}}>
-                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1.5px solid #D4AF37', paddingBottom:6, marginBottom:8, marginTop:6, direction:'ltr'}}>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1.5px solid #D4AF37', paddingBottom:6, marginBottom:6, marginTop:6, direction:'ltr'}}>
                   <div style={{flex:1, textAlign:'left', fontSize:7, color:'#0F172A', lineHeight:1.2, fontWeight:600}}><div>Syrian Arab republic</div><div>Tishreen palace</div></div>
                   <div style={{flex:'0 0 48px', display:'flex', justifyContent:'center'}} dangerouslySetInnerHTML={{__html: eagleSvg(42)}} />
                   <div style={{flex:1, textAlign:'right', fontSize:7, color:'#0F172A', lineHeight:1.2, fontWeight:700}}><div>الجمهورية العربية السورية</div><div>قصر تشرين</div></div>
                 </div>
+                <div style={{textAlign:'center', fontSize:7, color:'#5C4A1F', lineHeight:1.4, margin:'4px 0 8px', fontStyle:'italic', background:'#FFFBEB', padding:'5px 8px', borderRadius:6, border:'1px solid rgba(212,175,55,0.15)'}}>«هديّةٌ تُهدى، ومحبّةٌ تُروى، وأثرٌ طيّبٌ يبقى؛ فبعضُ الهدايا تُلامس اليد، وأجملُها ما يبلغ القلب، وقد قال ﷺ: «تَهَادَوْا تَحَابُّوا».»</div>
                 <div style={{position:'absolute', top:-10, right:12, background:'#0F172A', color:'white', fontSize:11, padding:'2px 8px', borderRadius:20}}>وثيقة {idx+1}</div>
                 <div style={{display:'flex', gap:6, marginBottom:8, marginTop:4}}>
                   <button onClick={()=> editDoc(idx)} style={{fontSize:11, padding:'4px 8px', background:'#FFFBEB', border:'1px solid #FDE68A', borderRadius:6, cursor:'pointer'}}>✎ تعديل</button>
@@ -430,11 +432,12 @@ export default function WorkDoc() {
               <div style={{fontSize:12, fontWeight:700, color: (form.name||files.length)?'#B8942F':'#94A3B8', marginBottom:8}}>{docs.length===0?'الوثيقة 1 (الحالية)':`الوثيقة ${docs.length+1} (مسودة)`} {form.name? `- ${form.name}` : ' - املأ الحقول ثم اضغط وثيقة أخرى'}</div>
               {(form.name||form.deliveryNumber||files.length>0) ? (
                 <>
-                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1.5px solid #D4AF37', paddingBottom:6, marginBottom:8, direction:'ltr'}}>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1.5px solid #D4AF37', paddingBottom:6, marginBottom:6, direction:'ltr'}}>
                     <div style={{flex:1, textAlign:'left', fontSize:7, color:'#0F172A', lineHeight:1.2, fontWeight:600}}><div>Syrian Arab republic</div><div>Tishreen palace</div></div>
                     <div style={{flex:'0 0 46px', display:'flex', justifyContent:'center'}} dangerouslySetInnerHTML={{__html: eagleSvg(40)}} />
                     <div style={{flex:1, textAlign:'right', fontSize:7, color:'#0F172A', lineHeight:1.2, fontWeight:700}}><div>الجمهورية العربية السورية</div><div>قصر تشرين</div></div>
                   </div>
+                  <div style={{textAlign:'center', fontSize:7, color:'#5C4A1F', lineHeight:1.4, margin:'4px 0 8px', fontStyle:'italic', background:'#FFFBEB', padding:'5px 8px', borderRadius:6, border:'1px solid rgba(212,175,55,0.15)'}}>«هديّةٌ تُهدى، ومحبّةٌ تُروى، وأثرٌ طيّبٌ يبقى؛ فبعضُ الهدايا تُلامس اليد، وأجملُها ما يبلغ القلب، وقد قال ﷺ: «تَهَادَوْا تَحَابُّوا».»</div>
                   <table style={{width:'100%', borderCollapse:'collapse', fontSize:12}}><tbody>
                     <tr><td style={{fontWeight:700, background:'#F8FAFC', padding:'6px 8px', border:'1px solid #E2E8F0', width:'32%'}}>الرقم</td><td style={{padding:'6px 8px', border:'1px solid #E2E8F0'}}>{form.deliveryNumber||'-'}</td></tr>
                     <tr><td style={{fontWeight:700, background:'#F8FAFC', padding:'6px 8px', border:'1px solid #E2E8F0'}}>الأسم</td><td style={{padding:'6px 8px', border:'1px solid #E2E8F0'}}>{form.name||'-'}</td></tr>
