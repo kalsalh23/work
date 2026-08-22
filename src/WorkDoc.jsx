@@ -6,6 +6,9 @@ import { supabase } from './supabaseClient'
 function getLocalDate(){
   const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10)
 }
+// شعار النسر الذهبي - مضمن مباشرة لضمان ظهوره في PDF والمعاينة (يحل مشكلة اختفاء الصورة)
+const EAGLE_SVG_INNER = `<defs><linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8C84A"/><stop offset="50%" stop-color="#D4AF37"/><stop offset="100%" stop-color="#B8942F"/></linearGradient><filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.15"/></filter></defs><g fill="url(#gold)" filter="url(#softShadow)"><polygon points="85,38 89,52 103,52 92,61 96,75 85,67 74,75 78,61 67,52 81,52"/><polygon points="200,12 205,30 223,30 209,40 214,58 200,48 186,58 191,40 177,30 195,30"/><polygon points="315,38 319,52 333,52 322,61 326,75 315,67 304,75 308,61 297,52 311,52"/></g><g fill="url(#gold)" stroke="#B8942F" stroke-width="1.2" stroke-linejoin="round" filter="url(#softShadow)"><path d="M12 165 C 28 125, 62 95, 108 108 L 138 98 C 125 125, 95 145, 72 175 C 52 195, 38 215, 32 235 C 28 210, 18 185, 12 165 Z"/><path d="M35 155 L 65 190 L 58 188 L 72 208 L 66 206 L 80 224 L 74 222 L 88 238" stroke="#B8942F" stroke-width="1.5" fill="none" opacity="0.9"/><path d="M55 135 L 85 170" stroke="#B8942F" stroke-width="1.2" fill="none" opacity="0.7"/><path d="M75 120 L 105 155" stroke="#B8942F" stroke-width="1.2" fill="none" opacity="0.7"/><path d="M388 165 C 372 125, 338 95, 292 108 L 262 98 C 275 125, 305 145, 328 175 C 348 195, 362 215, 368 235 C 372 210, 382 185, 388 165 Z"/><path d="M365 155 L 335 190 L 342 188 L 328 208 L 334 206 L 320 224 L 326 222 L 312 238" stroke="#B8942F" stroke-width="1.5" fill="none" opacity="0.9"/><path d="M345 135 L 315 170" stroke="#B8942F" stroke-width="1.2" fill="none" opacity="0.7"/><path d="M325 120 L 295 155" stroke="#B8942F" stroke-width="1.2" fill="none" opacity="0.7"/><path d="M148 102 C 158 88, 172 78, 192 82 C 205 84, 215 92, 218 102 L 235 108 C 245 128, 240 155, 225 180 C 215 200, 200 215, 188 235 C 175 245, 165 260, 160 285 L 155 298 L 150 285 C 145 260, 135 245, 122 235 C 110 215, 95 200, 85 180 C 70 155, 65 128, 75 108 L 92 102 C 95 92, 105 84, 118 82 C 138 78, 152 88, 148 102 Z"/><path d="M158 78 C 162 62, 172 52, 188 54 C 198 56, 208 64, 212 78 L 205 82 C 202 72, 194 66, 184 65 C 174 64, 166 70, 162 82 Z"/><path d="M188 54 C 192 48, 200 46, 208 52 C 212 56, 214 64, 212 72 L 206 68 C 204 62, 198 58, 192 60 Z" fill="#B8942F"/><path d="M162 78 C 155 80, 148 86, 150 94 C 152 100, 160 102, 165 98 L 162 92 C 160 88, 158 84, 162 78 Z" fill="#B8942F"/><circle cx="186" cy="72" r="2.5" fill="#8B6914"/><path d="M122 235 C 135 255, 145 275, 150 295 L 155 298 L 160 295 C 165 275, 175 255, 188 235 C 175 238, 162 240, 155 242 C 148 240, 135 238, 122 235 Z"/><path d="M135 238 L 145 275" stroke="#B8942F" stroke-width="1" fill="none"/><path d="M175 238 L 165 275" stroke="#B8942F" stroke-width="1" fill="none"/><path d="M155 242 L 155 298" stroke="#B8942F" stroke-width="1" fill="none"/><path d="M92 215 L 68 220 L 62 235 L 70 232 L 68 245 L 76 238 L 88 235 L 98 220 Z"/><path d="M308 215 L 332 220 L 338 235 L 330 232 L 332 245 L 324 238 L 312 235 L 302 220 Z"/></g>`
+function eagleSvg(size){ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 380" style="width:${size}px;height:${size}px;display:block" fill="none">${EAGLE_SVG_INNER}</svg>` }
 const emptyForm = {
   deliveryNumber: '',
   docDate: getLocalDate(),
@@ -219,9 +222,9 @@ export default function WorkDoc() {
         const tempDiv = document.createElement('div')
         tempDiv.style.position='absolute'; tempDiv.style.left='-9999px'; tempDiv.style.top='0'; tempDiv.style.width='700px'; tempDiv.style.background='white'; tempDiv.style.padding='18px'; tempDiv.style.fontFamily='sans-serif'; tempDiv.dir='rtl'; tempDiv.style.border='1px solid #E2E8F0'; tempDiv.style.borderRadius='12px'
         tempDiv.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #D4AF37; padding-bottom:8px; margin-bottom:10px">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #D4AF37; padding-bottom:8px; margin-bottom:10px; direction:ltr">
             <div style="flex:1; text-align:left; font-size:9px; color:#0F172A; line-height:1.3; font-weight:600; font-family:sans-serif"><div>Syrian Arab republic</div><div>Tishreen palace</div></div>
-            <div style="flex:0 0 68px; display:flex; justify-content:center; align-items:center"><img src="/eagle-gold.svg" style="width:60px; height:60px; object-fit:contain; display:block" crossorigin="anonymous" /></div>
+            <div style="flex:0 0 68px; display:flex; justify-content:center; align-items:center">${eagleSvg(60)}</div>
             <div style="flex:1; text-align:right; font-size:10px; color:#0F172A; line-height:1.3; font-weight:700; font-family:Cairo, sans-serif"><div>الجمهورية العربية السورية</div><div>قصر تشرين</div></div>
           </div>
           <div style="text-align:center; margin-bottom:10px">
@@ -394,9 +397,9 @@ export default function WorkDoc() {
           <div style={{display:'flex', flexDirection:'column', gap:14}}>
             {docs.map((doc, idx)=>(
               <div key={doc.id} className="doc-page" style={{background:'white', borderRadius:16, border:'2px solid #D4AF37', padding:16, boxShadow:'0 4px 16px rgba(15,23,42,0.07)', position:'relative', breakInside:'avoid'}}>
-                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1.5px solid #D4AF37', paddingBottom:6, marginBottom:8, marginTop:6}}>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1.5px solid #D4AF37', paddingBottom:6, marginBottom:8, marginTop:6, direction:'ltr'}}>
                   <div style={{flex:1, textAlign:'left', fontSize:7, color:'#0F172A', lineHeight:1.2, fontWeight:600}}><div>Syrian Arab republic</div><div>Tishreen palace</div></div>
-                  <div style={{flex:'0 0 48px', display:'flex', justifyContent:'center'}}><img src="/eagle-gold.svg" alt="شعار" style={{width:42, height:42, objectFit:'contain'}} /></div>
+                  <div style={{flex:'0 0 48px', display:'flex', justifyContent:'center'}} dangerouslySetInnerHTML={{__html: eagleSvg(42)}} />
                   <div style={{flex:1, textAlign:'right', fontSize:7, color:'#0F172A', lineHeight:1.2, fontWeight:700}}><div>الجمهورية العربية السورية</div><div>قصر تشرين</div></div>
                 </div>
                 <div style={{position:'absolute', top:-10, right:12, background:'#0F172A', color:'white', fontSize:11, padding:'2px 8px', borderRadius:20}}>وثيقة {idx+1}</div>
@@ -427,9 +430,9 @@ export default function WorkDoc() {
               <div style={{fontSize:12, fontWeight:700, color: (form.name||files.length)?'#B8942F':'#94A3B8', marginBottom:8}}>{docs.length===0?'الوثيقة 1 (الحالية)':`الوثيقة ${docs.length+1} (مسودة)`} {form.name? `- ${form.name}` : ' - املأ الحقول ثم اضغط وثيقة أخرى'}</div>
               {(form.name||form.deliveryNumber||files.length>0) ? (
                 <>
-                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1.5px solid #D4AF37', paddingBottom:6, marginBottom:8}}>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1.5px solid #D4AF37', paddingBottom:6, marginBottom:8, direction:'ltr'}}>
                     <div style={{flex:1, textAlign:'left', fontSize:7, color:'#0F172A', lineHeight:1.2, fontWeight:600}}><div>Syrian Arab republic</div><div>Tishreen palace</div></div>
-                    <div style={{flex:'0 0 46px', display:'flex', justifyContent:'center'}}><img src="/eagle-gold.svg" alt="شعار" style={{width:40, height:40, objectFit:'contain'}} /></div>
+                    <div style={{flex:'0 0 46px', display:'flex', justifyContent:'center'}} dangerouslySetInnerHTML={{__html: eagleSvg(40)}} />
                     <div style={{flex:1, textAlign:'right', fontSize:7, color:'#0F172A', lineHeight:1.2, fontWeight:700}}><div>الجمهورية العربية السورية</div><div>قصر تشرين</div></div>
                   </div>
                   <table style={{width:'100%', borderCollapse:'collapse', fontSize:12}}><tbody>
