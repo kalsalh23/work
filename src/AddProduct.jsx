@@ -262,7 +262,7 @@ export default function AddProduct({ onProductAdded }) {
         {/* تاريخ الاستلام + المناسبة (تم حذف تاريخ الارشفة، تاريخ التسليم، البلد المهدي، السعر التقريبي) */}
         <div className="form-card">
           <span className="card-label">تاريخ الاستلام</span>
-          <input type="date" value={receivedDate} onChange={(e)=> setReceivedDate(e.target.value)} />
+          <input type="date" value={receivedDate} onChange={(e)=> setReceivedDate(e.target.value)} onFocus={e=> e.target.showPicker && e.target.showPicker()} style={{minHeight:48, fontSize:16}} />
         </div>
 
         <div className="form-card">

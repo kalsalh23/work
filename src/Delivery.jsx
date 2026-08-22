@@ -11,7 +11,8 @@ export default function Delivery() {
   const [selectedProduct, setSelectedProduct] = useState('')
   const [quantity, setQuantity] = useState('')
   const [deliveredTo, setDeliveredTo] = useState('')
-  const [deliveryDate, setDeliveryDate] = useState(new Date().toISOString().slice(0,10))
+  function getLocalDate(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10) }
+  const [deliveryDate, setDeliveryDate] = useState(getLocalDate())
   const [recipientEntity, setRecipientEntity] = useState('')
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -110,7 +111,7 @@ export default function Delivery() {
           </div>
           <div className="form-card" style={{flex:1, minWidth:140, background:'rgba(255,255,255,0.85)', borderRadius:16, border:'1px solid rgba(255,255,255,0.25)', padding:20}}>
             <span className="card-label" style={{fontSize:'0.85rem', fontWeight:600, color:'#475569', marginBottom:8, display:'block'}}>تاريخ التسليم *</span>
-            <input type="date" value={deliveryDate} onChange={e=>setDeliveryDate(e.target.value)} required style={{width:'100%', padding:'14px 16px', border:'2px solid #E2E8F0', borderRadius:12}} />
+            <input type="date" value={deliveryDate} onChange={e=>setDeliveryDate(e.target.value)} onFocus={e=> e.target.showPicker && e.target.showPicker()} required style={{width:'100%', padding:'14px 16px', border:'2px solid #E2E8F0', borderRadius:12, minHeight:48, fontSize:16}} />
           </div>
         </div>
 

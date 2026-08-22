@@ -1240,6 +1240,60 @@ body {
 .workdoc input[type="date"] {
   direction: ltr;
   text-align: right;
+  min-height: 48px;
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  background-color: var(--jasmine-light);
+}
+
+/* إصلاح حقل التاريخ للجوال - منع تكبير iOS وتسهيل اللمس */
+.workdoc input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 4px;
+  opacity: 0.7;
+}
+.workdoc input[type="date"]::-webkit-date-and-time-value {
+  text-align: right;
+}
+
+/* ====== تحسينات الجوال ====== */
+@media (max-width: 600px) {
+  .dashboard { padding-bottom: 76px; }
+  .dashboard-content { padding: 12px 10px; max-width: 100%; }
+  .dashboard-header { padding: 12px 14px; gap: 8px; }
+  .dashboard-header h1 { font-size: 1rem; line-height: 1.2; }
+  .dashboard-header .brand-icon { width: 32px; height: 32px; font-size: 0.9rem; }
+  .logout-btn { padding: 6px 12px; font-size: 0.8rem; }
+
+  .bottom-nav { left: 8px; right: 8px; bottom: 8px; padding: 4px; max-width: none; gap: 2px; }
+  .bottom-nav button { font-size: 0.65rem; padding: 6px 2px; gap: 2px; }
+  .bottom-nav button .nav-icon { font-size: 1.1rem; }
+
+  .workdoc-layout { flex-direction: column !important; gap: 12px !important; }
+  .workdoc-form { width: 100% !important; min-width: 0 !important; flex: 1 1 100% !important; }
+  .workdoc-preview-section { width: 100% !important; min-width: 0 !important; flex: 1 1 100% !important; position: static !important; top: auto !important; }
+  .workdoc input, .workdoc select, .workdoc textarea { font-size: 16px !important; padding: 12px 14px !important; min-height: 48px; }
+  .workdoc .form-card { padding: 14px !important; margin-bottom: 10px !important; }
+  .workdoc-preview { padding: 14px !important; font-size: 0.8rem; }
+  .doc-table td { padding: 6px 8px !important; font-size: 0.8rem; }
+
+  .add-product .form-card { padding: 14px !important; }
+  .add-product input, .add-product select, .add-product textarea { font-size: 16px !important; min-height: 48px; }
+  .products-grid { grid-template-columns: 1fr !important; gap: 12px; }
+  .filter-bar { flex-direction: column !important; }
+  .image-buttons { flex-direction: column !important; }
+  .image-buttons .image-label { min-height: 70px !important; padding: 12px !important; }
+
+  /* منع التكبير التلقائي في iOS عند التركيز على الحقول */
+  input, select, textarea { font-size: 16px !important; }
+}
+
+/* تحسين التابلت */
+@media (min-width: 601px) and (max-width: 900px) {
+  .workdoc-layout { gap: 16px; }
+  .workdoc-preview-section { width: 340px !important; }
 }
 
 /* ====== PREVIEW ====== */

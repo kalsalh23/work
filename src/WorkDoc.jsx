@@ -3,9 +3,12 @@ import { PDFDocument } from 'pdf-lib'
 import html2canvas from 'html2canvas'
 import { supabase } from './supabaseClient'
 
+function getLocalDate(){
+  const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10)
+}
 const emptyForm = {
   deliveryNumber: '',
-  docDate: new Date().toISOString().slice(0,10),
+  docDate: getLocalDate(),
   name: '',
   giftType: '',
   description: '',
@@ -57,7 +60,7 @@ export default function WorkDoc() {
     const docFiles = files.map(entry=> ({...entry}))
     setDocs(prev=> [...prev, { id, form:{...form}, files: docFiles }])
     // تفريغ النموذج للوثيقة التالية
-    setForm({...emptyForm, docDate: new Date().toISOString().slice(0,10)})
+    setForm({...emptyForm, docDate: getLocalDate()})
     setFiles([])
     // scroll للفورم
     setTimeout(()=> formRef.current?.scrollIntoView({behavior:'smooth', block:'start'}), 100)
@@ -134,7 +137,7 @@ export default function WorkDoc() {
           details: doc.form.description||null,
           gift_type: doc.form.giftType||null,
           gift_description: doc.form.description||null,
-          archive_date: doc.form.docDate|| new Date().toISOString().slice(0,10),
+          archive_date: doc.form.docDate|| getLocalDate(),
           received_date: doc.form.docDate||null,
           delivery_date: doc.form.docDate||null,
           donor_country: doc.form.donorCountry||null,
@@ -161,7 +164,7 @@ export default function WorkDoc() {
       files.forEach(entry=> { if(entry.preview) try{ URL.revokeObjectURL(entry.preview)}catch{} })
       setDocs([])
       setFiles([])
-      setForm({...emptyForm, docDate: new Date().toISOString().slice(0,10)})
+      setForm({...emptyForm, docDate: getLocalDate()})
     }catch(err){ alert('خطأ في الحفظ: '+err.message); console.error(err) }
     setSaving(false)
   }
@@ -288,7 +291,7 @@ export default function WorkDoc() {
         <div className="workdoc-form" style={{flex:'1 1 360px', minWidth:300, display:'flex', flexDirection:'column', gap:10}}>
           <div style={{...cardStyle, border:'2px solid #D4AF37', background:'#FFFBEB'}}><span style={{fontSize:13, fontWeight:700, color:'#92400E'}}>📝 تحرير الوثيقة {docs.length+1}</span><span style={{fontSize:11, color:'#92400E', marginRight:8}}>{docs.length>0 ? `(تمت إضافة ${docs.length} وثيقة)` : '(الوثيقة الأولى)'}</span></div>
           <div style={cardStyle}><span style={labelStyle}>الرقم (رقم القطع) *</span><input name="deliveryNumber" value={form.deliveryNumber} onChange={handleChange} placeholder="مثال: 001" style={inputStyle} /></div>
-          <div style={cardStyle}><span style={labelStyle}>التاريخ *</span><input type="date" name="docDate" value={form.docDate} onChange={handleChange} style={inputStyle} /></div>
+          <div style={cardStyle}><span style={labelStyle}>التاريخ *</span><input type="date" name="docDate" value={form.docDate} onChange={handleChange} onFocus={e=> e.target.showPicker && e.target.showPicker()} style={{...inputStyle, minHeight:48}} lang="ar" /></div>
           <div style={cardStyle}><span style={labelStyle}>الأسم *</span><input name="name" value={form.name} onChange={handleChange} placeholder="اسم الهدية / القطعة" style={inputStyle} /></div>
           <div style={cardStyle}><span style={labelStyle}>النوع</span><input name="giftType" value={form.giftType} onChange={handleChange} placeholder="نوع الهدية" style={inputStyle} /></div>
           <div style={cardStyle}><span style={labelStyle}>الوصف</span><textarea name="description" value={form.description} onChange={handleChange} placeholder="وصف تفصيلي" rows={3} style={{...inputStyle, resize:'vertical'}} /></div>

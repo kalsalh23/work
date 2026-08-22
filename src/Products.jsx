@@ -264,7 +264,7 @@ export default function Products({ onUpdate }) {
         </div>
         <div style={{flex:1, minWidth:150}}>
           <label style={{fontSize:12, color:'#475569', display:'block', marginBottom:4}}>فلترة حسب اليوم</label>
-          <input type="date" value={filterDate} onChange={e=>setFilterDate(e.target.value)} style={{width:'100%', padding:'12px 16px', border:'2px solid #E2E8F0', borderRadius:12, background:'white'}} />
+          <input type="date" value={filterDate} onChange={e=>setFilterDate(e.target.value)} onFocus={e=> e.target.showPicker && e.target.showPicker()} style={{width:'100%', padding:'12px 16px', border:'2px solid #E2E8F0', borderRadius:12, background:'white', minHeight:48, fontSize:16}} />
         </div>
         {filterDate && <button onClick={()=>setFilterDate('')} style={{padding:'12px 14px', background:'#E2E8F0', border:'none', borderRadius:12, cursor:'pointer'}}>مسح</button>}
       </div>
