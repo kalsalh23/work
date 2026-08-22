@@ -183,28 +183,58 @@ export default function WorkDoc() {
       const merged = await PDFDocument.create()
       const a4W=595.28, a4H=841.89, margin=20, maxW=a4W-margin*2, maxH=a4H-margin*2
 
-      // دالة مساعدة لإضافة غلاف وثيقة كصورة
+      // دالة مساعدة لإضافة غلاف وثيقة كصورة - الصورة والبيانات في صفحة واحدة
       async function addCoverForDoc(doc, index){
-        // أنشئ عنصر مؤقت للغلاف لالتقاطه
-        const tempDiv = document.createElement('div')
-        tempDiv.style.position='absolute'; tempDiv.style.left='-9999px'; tempDiv.style.top='0'; tempDiv.style.width='700px'; tempDiv.style.background='white'; tempDiv.style.padding='20px'; tempDiv.style.fontFamily='sans-serif'; tempDiv.dir='rtl'
-        tempDiv.innerHTML = `
-          <div style="text-align:center; border-bottom:2px solid #D4AF37; padding-bottom:12px; margin-bottom:12px">
-            <h2 style="margin:0; color:#0F172A">وثيقة ${index+1} - توثيق هدية</h2>
-            <p style="margin:4px 0 0; color:#64748B; font-size:12px">التاريخ: ${doc.form.docDate || ''} • الرقم: ${doc.form.deliveryNumber || '-'}</p>
+        // حضّر صور الوثيقة كـ HTML داخل الغلاف (الصورة والبيانات معاً في صفحة واحدة)
+        let imagesInner = ''
+        if(doc.files.length>0){
+          const parts = await Promise.all(doc.files.slice(0,4).map(async entry=>{
+            if(entry.type==='image' && entry.preview){
+              let src = entry.preview
+              try{
+                const dataUrl = await new Promise(res=>{
+                  const fr=new FileReader(); fr.onload=e=>res(e.target.result); fr.onerror=()=>res(src); fr.readAsDataURL(entry.file)
+                })
+                src = dataUrl
+              }catch{}
+              return `<img src="${src}" style="width:100%; height:140px; object-fit:cover; border:1px solid #E2E8F0; border-radius:8px; display:block" />`
+            } else if(entry.type==='pdf'){
+              return `<div style="height:140px; border:1px solid #E2E8F0; border-radius:8px; background:#F8FAFC; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px"><span style="font-size:28px">📄</span><span style="font-size:10px; color:#475569; text-align:center; padding:0 6px; word-break:break-all">${entry.name}</span><span style="font-size:9px; color:#94A3B8">PDF</span></div>`
+            } else {
+              return `<div style="height:140px; border:1px solid #E2E8F0; border-radius:8px; background:#F8FAFC; display:flex; align-items:center; justify-content:center"><span style="font-size:20px">📃</span></div>`
+            }
+          }))
+          imagesInner = parts.join('')
+        }
+        const imagesHtml = doc.files.length>0 ? `
+          <div style="margin-top:12px; border-top:1px solid #E2E8F0; padding-top:10px">
+            <h3 style="color:#B8942F; border-right:3px solid #D4AF37; padding-right:8; margin:0 0 8px; font-size:13px">الصور المرفقة (${doc.files.length})</h3>
+            <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px">
+              ${imagesInner}
+            </div>
+            ${doc.files.length>4 ? `<p style="font-size:10px; color:#94A3B8; text-align:center; margin:6px 0 0">+ ${doc.files.length-4} مرفق إضافي سيظهر في الصفحات التالية</p>` : ``}
           </div>
-          <table style="width:100%; border-collapse:collapse; font-size:13px">
-            <tr><td style="font-weight:700; background:#F8FAFC; padding:8px 10px; border:1px solid #E2E8F0; width:30%">الرقم (رقم القطع)</td><td style="padding:8px 10px; border:1px solid #E2E8F0">${doc.form.deliveryNumber||'-'}</td></tr>
-            <tr><td style="font-weight:700; background:#F8FAFC; padding:8px 10px; border:1px solid #E2E8F0">التاريخ</td><td style="padding:8px 10px; border:1px solid #E2E8F0">${doc.form.docDate||'-'}</td></tr>
-            <tr><td style="font-weight:700; background:#F8FAFC; padding:8px 10px; border:1px solid #E2E8F0">الأسم</td><td style="padding:8px 10px; border:1px solid #E2E8F0">${doc.form.name||'-'}</td></tr>
-            <tr><td style="font-weight:700; background:#F8FAFC; padding:8px 10px; border:1px solid #E2E8F0">النوع</td><td style="padding:8px 10px; border:1px solid #E2E8F0">${doc.form.giftType||'-'}</td></tr>
-            <tr><td style="font-weight:700; background:#F8FAFC; padding:8px 10px; border:1px solid #E2E8F0">الجهة الرسمية</td><td style="padding:8px 10px; border:1px solid #E2E8F0">${doc.form.officialEntity||'-'}</td></tr>
-            <tr><td style="font-weight:700; background:#F8FAFC; padding:8px 10px; border:1px solid #E2E8F0">البلد المهدي</td><td style="padding:8px 10px; border:1px solid #E2E8F0">${doc.form.donorCountry||'-'}</td></tr>
-            <tr><td style="font-weight:700; background:#F8FAFC; padding:8px 10px; border:1px solid #E2E8F0">البلد المستلم</td><td style="padding:8px 10px; border:1px solid #E2E8F0">${doc.form.recipientCountry||'-'}</td></tr>
-            <tr><td style="font-weight:700; background:#F8FAFC; padding:8px 10px; border:1px solid #E2E8F0">نوع الزيارة</td><td style="padding:8px 10px; border:1px solid #E2E8F0">${doc.form.visitType||'-'}</td></tr>
+        ` : `<div style="margin-top:12px; text-align:center; color:#94A3B8; font-size:11px; background:#F8FAFC; padding:10px; border-radius:8; border:1px dashed #E2E8F0">لا توجد صور لهذه الوثيقة</div>`
+
+        const tempDiv = document.createElement('div')
+        tempDiv.style.position='absolute'; tempDiv.style.left='-9999px'; tempDiv.style.top='0'; tempDiv.style.width='700px'; tempDiv.style.background='white'; tempDiv.style.padding='18px'; tempDiv.style.fontFamily='sans-serif'; tempDiv.dir='rtl'; tempDiv.style.border='1px solid #E2E8F0'; tempDiv.style.borderRadius='12px'
+        tempDiv.innerHTML = `
+          <div style="text-align:center; border-bottom:2px solid #D4AF37; padding-bottom:10px; margin-bottom:10px">
+            <h2 style="margin:0; color:#0F172A; font-size:16px">وثيقة ${index+1} / ${allDocs.length} - توثيق هدية</h2>
+            <p style="margin:4px 0 0; color:#64748B; font-size:11px">التاريخ: ${doc.form.docDate || ''} • الرقم: ${doc.form.deliveryNumber || '-'}</p>
+            <p style="margin:2px 0 0; color:#94A3B8; font-size:10px">صفحة ${index+1} من ${allDocs.length} - البيانات والصورة معاً في صفحة واحدة</p>
+          </div>
+          <table style="width:100%; border-collapse:collapse; font-size:12px">
+            <tr><td style="font-weight:700; background:#F8FAFC; padding:6px 8px; border:1px solid #E2E8F0; width:28%">الرقم</td><td style="padding:6px 8px; border:1px solid #E2E8F0">${doc.form.deliveryNumber||'-'}</td></tr>
+            <tr><td style="font-weight:700; background:#F8FAFC; padding:6px 8px; border:1px solid #E2E8F0">التاريخ</td><td style="padding:6px 8px; border:1px solid #E2E8F0">${doc.form.docDate||'-'}</td></tr>
+            <tr><td style="font-weight:700; background:#F8FAFC; padding:6px 8px; border:1px solid #E2E8F0">الأسم</td><td style="padding:6px 8px; border:1px solid #E2E8F0">${doc.form.name||'-'}</td></tr>
+            <tr><td style="font-weight:700; background:#F8FAFC; padding:6px 8px; border:1px solid #E2E8F0">النوع</td><td style="padding:6px 8px; border:1px solid #E2E8F0">${doc.form.giftType||'-'}</td></tr>
+            <tr><td style="font-weight:700; background:#F8FAFC; padding:6px 8px; border:1px solid #E2E8F0">الجهة</td><td style="padding:6px 8px; border:1px solid #E2E8F0">${doc.form.officialEntity||'-'}</td></tr>
+            <tr><td style="font-weight:700; background:#F8FAFC; padding:6px 8px; border:1px solid #E2E8F0">المهدي → المستلم</td><td style="padding:6px 8px; border:1px solid #E2E8F0">${doc.form.donorCountry||'-'} → ${doc.form.recipientCountry||'-'}</td></tr>
+            <tr><td style="font-weight:700; background:#F8FAFC; padding:6px 8px; border:1px solid #E2E8F0">نوع الزيارة</td><td style="padding:6px 8px; border:1px solid #E2E8F0">${doc.form.visitType||'-'}</td></tr>
           </table>
-          <div style="margin-top:12px"><h3 style="color:#B8942F; border-right:3px solid #D4AF37; padding-right:8; margin:0 0 6px; font-size:14px">الوصف</h3><p style="margin:0; white-space:pre-wrap; color:#475569; font-size:13px">${(doc.form.description||'-').replace(/</g,'&lt;')}</p></div>
-          <div style="margin-top:8px; font-size:11px; color:#94A3B8; textAlign:center">وثيقة ${index+1} من ${allDocs.length} • المرفقات: ${doc.files.length} وثيقة</div>
+          <div style="margin-top:10px"><h3 style="color:#B8942F; border-right:3px solid #D4AF37; padding-right:8; margin:0 0 6px; font-size:12px">الوصف</h3><p style="margin:0; white-space:pre-wrap; color:#475569; font-size:11px; line-height:1.5; background:#F8FAFC; padding:6px 8px; border-radius:6px; border:1px solid #F1F5F9">${(doc.form.description||'-').replace(/</g,'&lt;')}</p></div>
+          ${imagesHtml}
         `
         document.body.appendChild(tempDiv)
         // انتظر قليلاً للرسم
@@ -221,13 +251,14 @@ export default function WorkDoc() {
         pg.drawImage(img, { x:(a4W-w)/2, y:a4H-margin-h, width:w, height:h })
       }
 
-      // أضف غلاف لكل وثيقة ثم مرفقاتها
+      // أضف غلاف لكل وثيقة (البيانات والصورة معاً في صفحة واحدة) ثم المرفقات الإضافية فقط
       for(let i=0;i<allDocs.length;i++){
         const doc = allDocs[i]
         await addCoverForDoc(doc, i)
-        // مرفقات هذه الوثيقة
+        // المرفقات الإضافية: الصور بعد الرابعة + كل ملفات PDF (التي لم تُعرض كاملة في الغلاف)
         for(let j=0;j<doc.files.length;j++){
           const entry = doc.files[j]
+          if(entry.type==='image' && j < 4) continue // الصورة معروضة بالفعل في الغلاف
           const f = entry.file
           if(entry.type==='image'){
             try{
@@ -356,7 +387,7 @@ export default function WorkDoc() {
 
           <div style={{display:'flex', flexDirection:'column', gap:14}}>
             {docs.map((doc, idx)=>(
-              <div key={doc.id} style={{background:'white', borderRadius:16, border:'2px solid #D4AF37', padding:16, boxShadow:'0 4px 16px rgba(15,23,42,0.07)', position:'relative'}}>
+              <div key={doc.id} className="doc-page" style={{background:'white', borderRadius:16, border:'2px solid #D4AF37', padding:16, boxShadow:'0 4px 16px rgba(15,23,42,0.07)', position:'relative', breakInside:'avoid'}}>
                 <div style={{position:'absolute', top:-10, right:12, background:'#0F172A', color:'white', fontSize:11, padding:'2px 8px', borderRadius:20}}>وثيقة {idx+1}</div>
                 <div style={{display:'flex', gap:6, marginBottom:8, marginTop:4}}>
                   <button onClick={()=> editDoc(idx)} style={{fontSize:11, padding:'4px 8px', background:'#FFFBEB', border:'1px solid #FDE68A', borderRadius:6, cursor:'pointer'}}>✎ تعديل</button>
@@ -380,8 +411,8 @@ export default function WorkDoc() {
               </div>
             ))}
 
-            {/* مسودة حالية */}
-            <div style={{background: (form.name||files.length)?'white':'#F8FAFC', borderRadius:16, border: (form.name||files.length)?'2px dashed #D4AF37':'1px dashed #CBD5E1', padding:16, opacity: (form.name||files.length)?1:0.7}}>
+            {/* مسودة حالية - تظهر كصفحة أيضاً */}
+            <div className="doc-page" style={{background: (form.name||files.length)?'white':'#F8FAFC', borderRadius:16, border: (form.name||files.length)?'2px dashed #D4AF37':'1px dashed #CBD5E1', padding:16, opacity: (form.name||files.length)?1:0.7, breakInside:'avoid'}}>
               <div style={{fontSize:12, fontWeight:700, color: (form.name||files.length)?'#B8942F':'#94A3B8', marginBottom:8}}>{docs.length===0?'الوثيقة 1 (الحالية)':`الوثيقة ${docs.length+1} (مسودة)`} {form.name? `- ${form.name}` : ' - املأ الحقول ثم اضغط وثيقة أخرى'}</div>
               {(form.name||form.deliveryNumber||files.length>0) ? (
                 <>

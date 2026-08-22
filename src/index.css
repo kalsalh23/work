@@ -1296,6 +1296,20 @@ body {
   .workdoc-preview-section { width: 340px !important; }
 }
 
+/* عرض الوثائق كصفحات منفصلة - الصورة والبيانات معاً في صفحة واحدة */
+.workdoc-preview .doc-page {
+  page-break-after: always;
+  break-after: page;
+}
+.workdoc-preview .doc-page:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+@media print {
+  .workdoc-preview { border: none !important; box-shadow: none !important; }
+  .workdoc-preview .doc-page { border: 1px solid #E2E8F0 !important; margin-bottom: 20px; }
+}
+
 /* ====== PREVIEW ====== */
 
 .workdoc-preview-section {
