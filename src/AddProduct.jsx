@@ -7,7 +7,16 @@ export default function AddProduct({ onProductAdded }) {
   const [images, setImages] = useState([])
   const [imagePreviews, setImagePreviews] = useState([])
   const [categoryId, setCategoryId] = useState('')
-  const [details, setDetails] = useState('')
+  // الحقول الجديدة لنظام الهدايا
+  const [giftType, setGiftType] = useState('')
+  const [giftDescription, setGiftDescription] = useState('')
+  const [archiveDate, setArchiveDate] = useState(new Date().toISOString().slice(0,10))
+  const [receivedDate, setReceivedDate] = useState('')
+  const [deliveryDate, setDeliveryDate] = useState('')
+  const [donorCountry, setDonorCountry] = useState('')
+  const [estimatedPrice, setEstimatedPrice] = useState('')
+  const [occasion, setOccasion] = useState('')
+
   const [categories, setCategories] = useState([])
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [newCategory, setNewCategory] = useState('')
@@ -35,6 +44,7 @@ export default function AddProduct({ onProductAdded }) {
     if (data && data[0]) {
       setCategories((prev) => [...prev, data[0]])
       setCategoryId(data[0].id)
+      setGiftType(data[0].name)
       setNewCategory('')
       setShowAddCategory(false)
     }
@@ -92,7 +102,10 @@ export default function AddProduct({ onProductAdded }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!name || !quantity || !categoryId) return
+    if (!name || !quantity) {
+      alert('يرجى تعبئة اسم الهدية وعددها')
+      return
+    }
     setLoading(true)
 
     try {
@@ -113,23 +126,61 @@ export default function AddProduct({ onProductAdded }) {
         }
       }
 
-      const { error } = await supabase.from('products').insert({
-        name,
+      const payload = {
+        name: name.trim(),
         quantity: parseInt(quantity),
         images: imageUrls,
-        category_id: categoryId,
-        details,
-      })
-
-      if (!error) {
-        setName('')
-        setQuantity('')
-        setImages([])
-        setImagePreviews([])
-        setCategoryId('')
-        setDetails('')
-        onProductAdded()
+        category_id: categoryId || null,
+        details: giftDescription || null,
+        // الحقول الجديدة
+        gift_type: giftType || (categories.find(c=>String(c.id)===String(categoryId))?.name) || null,
+        gift_description: giftDescription || null,
+        archive_date: archiveDate || new Date().toISOString().slice(0,10),
+        received_date: receivedDate || null,
+        delivery_date: deliveryDate || null,
+        donor_country: donorCountry || null,
+        estimated_price: estimatedPrice ? parseFloat(estimatedPrice) : null,
+        occasion: occasion || null,
       }
+
+      const { error } = await supabase.from('products').insert(payload)
+
+      if (error) {
+        // fallback for DB without new columns (تجاهل الحقول الجديدة)
+        if (error.message.includes('column') || error.message.includes('schema cache')) {
+          const fallback = {
+            name: payload.name,
+            quantity: payload.quantity,
+            images: payload.images,
+            category_id: payload.category_id,
+            details: payload.details,
+          }
+          const { error: e2 } = await supabase.from('products').insert(fallback)
+          if (e2) throw e2
+          alert('تم الحفظ (الوضع المتوافق) - يرجى تشغيل supabase_gifts_migration.sql في Supabase لإضافة الحقول الجديدة')
+        } else {
+          throw error
+        }
+      }
+
+      // reset
+      setName('')
+      setQuantity('')
+      setImages([])
+      setImagePreviews([])
+      setCategoryId('')
+      setGiftType('')
+      setGiftDescription('')
+      setArchiveDate(new Date().toISOString().slice(0,10))
+      setReceivedDate('')
+      setDeliveryDate('')
+      setDonorCountry('')
+      setEstimatedPrice('')
+      setOccasion('')
+      onProductAdded()
+      alert('✓ تم حفظ الهدية بنجاح')
+    } catch (err) {
+      alert('خطأ: ' + err.message)
     } finally {
       setLoading(false)
     }
@@ -139,38 +190,45 @@ export default function AddProduct({ onProductAdded }) {
     <div className="add-product">
       <div className="page-title">
         <div className="title-icon">＋</div>
-        <h2>اضافة منتج</h2>
+        <h2>إضافة هدية / منتج</h2>
       </div>
       <form onSubmit={handleSubmit}>
-        <div className="form-card">
-          <span className="card-label">اسم القطعة</span>
-          <input
-            type="text"
-            placeholder="أدخل اسم القطعة"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+        {/* اسم الهدية + العدد */}
+        <div className="form-row" style={{display:'flex', gap:12}}>
+          <div className="form-card" style={{flex:2}}>
+            <span className="card-label">اسم الهدية *</span>
+            <input
+              type="text"
+              placeholder="أدخل اسم الهدية"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-card" style={{flex:1}}>
+            <span className="card-label">عدد الهدايا *</span>
+            <input
+              type="number"
+              min="1"
+              placeholder="العدد"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
+        {/* الصنف + نوع الهدية */}
         <div className="form-card">
-          <span className="card-label">عدد القطع</span>
-          <input
-            type="number"
-            placeholder="أدخل العدد"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="form-card">
-          <span className="card-label">الصنف</span>
+          <span className="card-label">الصنف / نوع الهدية</span>
           <div className="category-row">
             <select
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              required
+              onChange={(e) => {
+                setCategoryId(e.target.value)
+                const cat = categories.find(c=>String(c.id)===e.target.value)
+                if(cat) setGiftType(cat.name)
+              }}
             >
               <option value="">اختر صنف</option>
               {categories.map((cat) => (
@@ -181,7 +239,6 @@ export default function AddProduct({ onProductAdded }) {
               ＋ صنف
             </button>
           </div>
-
           {showAddCategory && (
             <div className="add-category-inline">
               <input
@@ -194,8 +251,60 @@ export default function AddProduct({ onProductAdded }) {
               <button type="button" onClick={() => setShowAddCategory(false)}>إلغاء</button>
             </div>
           )}
+          <input
+            type="text"
+            placeholder="نوع الهدية (مثال: درع تكريمي، لوحة، مجسم...)"
+            value={giftType}
+            onChange={(e)=> setGiftType(e.target.value)}
+            style={{marginTop:10}}
+          />
         </div>
 
+        {/* وصف الهدية */}
+        <div className="form-card">
+          <span className="card-label">وصف الهدية</span>
+          <textarea
+            placeholder="أدخل وصف تفصيلي للهدية (المواد، الأبعاد، الحالة...)"
+            value={giftDescription}
+            onChange={(e) => setGiftDescription(e.target.value)}
+            rows={3}
+          />
+        </div>
+
+        {/* التواريخ الثلاثة */}
+        <div className="form-row" style={{display:'flex', gap:12, flexWrap:'wrap'}}>
+          <div className="form-card" style={{flex:1, minWidth:140}}>
+            <span className="card-label">تاريخ الأرشفة *</span>
+            <input type="date" value={archiveDate} onChange={(e)=> setArchiveDate(e.target.value)} required />
+          </div>
+          <div className="form-card" style={{flex:1, minWidth:140}}>
+            <span className="card-label">تاريخ الاستلام</span>
+            <input type="date" value={receivedDate} onChange={(e)=> setReceivedDate(e.target.value)} />
+          </div>
+          <div className="form-card" style={{flex:1, minWidth:140}}>
+            <span className="card-label">تاريخ التسليم</span>
+            <input type="date" value={deliveryDate} onChange={(e)=> setDeliveryDate(e.target.value)} />
+          </div>
+        </div>
+
+        {/* البلد + السعر + المناسبة */}
+        <div className="form-row" style={{display:'flex', gap:12, flexWrap:'wrap'}}>
+          <div className="form-card" style={{flex:1, minWidth:140}}>
+            <span className="card-label">البلد المهدي</span>
+            <input type="text" placeholder="مثال: السعودية، الإمارات..." value={donorCountry} onChange={(e)=> setDonorCountry(e.target.value)} />
+          </div>
+          <div className="form-card" style={{flex:1, minWidth:140}}>
+            <span className="card-label">السعر التقريبي</span>
+            <input type="number" step="0.01" placeholder="بالدولار أو العملة المحلية" value={estimatedPrice} onChange={(e)=> setEstimatedPrice(e.target.value)} />
+          </div>
+        </div>
+
+        <div className="form-card">
+          <span className="card-label">المناسبة الرسمية</span>
+          <input type="text" placeholder="مثال: عيد الجلاء، زيارة رسمية، مؤتمر..." value={occasion} onChange={(e)=> setOccasion(e.target.value)} />
+        </div>
+
+        {/* الصور */}
         <div className="form-card">
           <span className="card-label">الصور</span>
           <div className="image-upload">
@@ -238,18 +347,8 @@ export default function AddProduct({ onProductAdded }) {
           </div>
         </div>
 
-        <div className="form-card">
-          <span className="card-label">تفاصيل اضافية</span>
-          <textarea
-            placeholder="أدخل تفاصيل اضافية (اختياري)"
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-            rows={3}
-          />
-        </div>
-
         <button type="submit" disabled={loading}>
-          {loading ? 'جاري الحفظ...' : '✓ حفظ المنتج'}
+          {loading ? 'جاري الحفظ...' : '✓ حفظ الهدية'}
         </button>
       </form>
     </div>
