@@ -7,14 +7,10 @@ export default function AddProduct({ onProductAdded }) {
   const [images, setImages] = useState([])
   const [imagePreviews, setImagePreviews] = useState([])
   const [categoryId, setCategoryId] = useState('')
-  // الحقول الجديدة لنظام الهدايا
+  // الحقول الجديدة لنظام الهدايا (تم ازالة تاريخ الارشفة، تاريخ التسليم، البلد المهدي، السعر التقريبي حسب الطلب)
   const [giftType, setGiftType] = useState('')
   const [giftDescription, setGiftDescription] = useState('')
-  const [archiveDate, setArchiveDate] = useState(new Date().toISOString().slice(0,10))
   const [receivedDate, setReceivedDate] = useState('')
-  const [deliveryDate, setDeliveryDate] = useState('')
-  const [donorCountry, setDonorCountry] = useState('')
-  const [estimatedPrice, setEstimatedPrice] = useState('')
   const [occasion, setOccasion] = useState('')
 
   const [categories, setCategories] = useState([])
@@ -132,14 +128,10 @@ export default function AddProduct({ onProductAdded }) {
         images: imageUrls,
         category_id: categoryId || null,
         details: giftDescription || null,
-        // الحقول الجديدة
+        // الحقول الجديدة (المتبقية بعد الحذف)
         gift_type: giftType || (categories.find(c=>String(c.id)===String(categoryId))?.name) || null,
         gift_description: giftDescription || null,
-        archive_date: archiveDate || new Date().toISOString().slice(0,10),
         received_date: receivedDate || null,
-        delivery_date: deliveryDate || null,
-        donor_country: donorCountry || null,
-        estimated_price: estimatedPrice ? parseFloat(estimatedPrice) : null,
         occasion: occasion || null,
       }
 
@@ -171,11 +163,7 @@ export default function AddProduct({ onProductAdded }) {
       setCategoryId('')
       setGiftType('')
       setGiftDescription('')
-      setArchiveDate(new Date().toISOString().slice(0,10))
       setReceivedDate('')
-      setDeliveryDate('')
-      setDonorCountry('')
-      setEstimatedPrice('')
       setOccasion('')
       onProductAdded()
       alert('✓ تم حفظ الهدية بنجاح')
@@ -271,32 +259,10 @@ export default function AddProduct({ onProductAdded }) {
           />
         </div>
 
-        {/* التواريخ الثلاثة */}
-        <div className="form-row" style={{display:'flex', gap:12, flexWrap:'wrap'}}>
-          <div className="form-card" style={{flex:1, minWidth:140}}>
-            <span className="card-label">تاريخ الأرشفة *</span>
-            <input type="date" value={archiveDate} onChange={(e)=> setArchiveDate(e.target.value)} required />
-          </div>
-          <div className="form-card" style={{flex:1, minWidth:140}}>
-            <span className="card-label">تاريخ الاستلام</span>
-            <input type="date" value={receivedDate} onChange={(e)=> setReceivedDate(e.target.value)} />
-          </div>
-          <div className="form-card" style={{flex:1, minWidth:140}}>
-            <span className="card-label">تاريخ التسليم</span>
-            <input type="date" value={deliveryDate} onChange={(e)=> setDeliveryDate(e.target.value)} />
-          </div>
-        </div>
-
-        {/* البلد + السعر + المناسبة */}
-        <div className="form-row" style={{display:'flex', gap:12, flexWrap:'wrap'}}>
-          <div className="form-card" style={{flex:1, minWidth:140}}>
-            <span className="card-label">البلد المهدي</span>
-            <input type="text" placeholder="مثال: السعودية، الإمارات..." value={donorCountry} onChange={(e)=> setDonorCountry(e.target.value)} />
-          </div>
-          <div className="form-card" style={{flex:1, minWidth:140}}>
-            <span className="card-label">السعر التقريبي</span>
-            <input type="number" step="0.01" placeholder="بالدولار أو العملة المحلية" value={estimatedPrice} onChange={(e)=> setEstimatedPrice(e.target.value)} />
-          </div>
+        {/* تاريخ الاستلام + المناسبة (تم حذف تاريخ الارشفة، تاريخ التسليم، البلد المهدي، السعر التقريبي) */}
+        <div className="form-card">
+          <span className="card-label">تاريخ الاستلام</span>
+          <input type="date" value={receivedDate} onChange={(e)=> setReceivedDate(e.target.value)} />
         </div>
 
         <div className="form-card">
