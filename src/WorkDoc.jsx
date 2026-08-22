@@ -91,16 +91,27 @@ export default function WorkDoc() {
       reader.onload=e=>{
         const img=new Image(); img.src=e.target.result
         img.onload=()=>{
-          const canvas=document.createElement('canvas'); const MAX=1400
+          const canvas=document.createElement('canvas'); const MAX=2000
           let {width,height}=img; if(width>MAX||height>MAX){ if(width>height){height=(height/width)*MAX;width=MAX}else{width=(width/height)*MAX;height=MAX} }
-          canvas.width=width; canvas.height=height; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,width,height)
+          canvas.width=width; canvas.height=height
+          const ctx=canvas.getContext('2d')
+          // خلفية بيضاء لضمان عدم ظهور خلفية سوداء للـ PNG الشفاف
+          ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,width,height)
+          ctx.drawImage(img,0,0,width,height)
           canvas.toBlob(blob=>{
+            if(!blob){ res(file); return }
             const cf=new File([blob], file.name.replace(/\.[^.]+$/,'.jpg'), {type:'image/jpeg'})
             res(cf)
-          },'image/jpeg',0.75)
+          },'image/jpeg',0.85)
         }; img.onerror=()=>res(file)
       }; reader.onerror=()=>res(file)
     })
+  }
+  // تحويل صورة الى JPG بجودة عالية للـ PDF مع خلفية بيضاء
+  async function imageToJpgBytes(file){
+    const jpgFile = await compressImage(file)
+    const buf = await jpgFile.arrayBuffer()
+    return buf
   }
 
   async function uploadFilesForDoc(docFiles){
@@ -200,11 +211,11 @@ export default function WorkDoc() {
                 })
                 src = dataUrl
               }catch{}
-              return `<img src="${src}" style="width:100%; height:140px; object-fit:cover; border:1px solid #E2E8F0; border-radius:8px; display:block" />`
-            } else if(entry.type==='pdf'){
-              return `<div style="height:140px; border:1px solid #E2E8F0; border-radius:8px; background:#F8FAFC; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px"><span style="font-size:28px">📄</span><span style="font-size:10px; color:#475569; text-align:center; padding:0 6px; word-break:break-all">${entry.name}</span><span style="font-size:9px; color:#94A3B8">PDF</span></div>`
-            } else {
-              return `<div style="height:140px; border:1px solid #E2E8F0; border-radius:8px; background:#F8FAFC; display:flex; align-items:center; justify-content:center"><span style="font-size:20px">📃</span></div>`
+              return `<img src="${src}" style="width:100%; height:165px; object-fit:contain; background:white; border:1px solid #E2E8F0; border-radius:8px; display:block; padding:4px" />`
+                } else if(entry.type==='pdf'){
+                  return `<div style="height:165px; border:1px solid #E2E8F0; border-radius:8px; background:#F8FAFC; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px"><span style="font-size:28px">📄</span><span style="font-size:10px; color:#475569; text-align:center; padding:0 6px; word-break:break-all">${entry.name}</span><span style="font-size:9px; color:#94A3B8">PDF</span></div>`
+                } else {
+                  return `<div style="height:165px; border:1px solid #E2E8F0; border-radius:8px; background:#F8FAFC; display:flex; align-items:center; justify-content:center"><span style="font-size:20px">📃</span></div>`
             }
           }))
           imagesInner = parts.join('')
@@ -265,26 +276,23 @@ export default function WorkDoc() {
       for(let i=0;i<allDocs.length;i++){
         const doc = allDocs[i]
         await addCoverForDoc(doc, i)
-        // المرفقات الإضافية: الصور بعد الرابعة + كل ملفات PDF (التي لم تُعرض كاملة في الغلاف)
+        // المرفقات الإضافية: الصور بعد الرابعة + كل ملفات PDF (التي لم تُعرض كاملة في الغلاف) - مع إصلاح العرض
         for(let j=0;j<doc.files.length;j++){
           const entry = doc.files[j]
-          if(entry.type==='image' && j < 4) continue // الصورة معروضة بالفعل في الغلاف
+          if(entry.type==='image' && j < 4) continue // الصورة معروضة بالفعل في الغلاف (تظهر بشكل صحيح هناك)
           const f = entry.file
           if(entry.type==='image'){
             try{
-              const buf = await f.arrayBuffer()
-              let img
-              try{ img = f.type==='image/png' ? await merged.embedPng(buf) : await merged.embedJpg(buf) }catch{
-                // fallback عبر preview
-                const dataUrl = entry.preview || await new Promise(res=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.readAsDataURL(f) })
-                const b2 = await fetch(dataUrl).then(r=>r.arrayBuffer())
-                img = await merged.embedJpg(b2)
-              }
+              const jpgBuf = await imageToJpgBytes(f)
+              const img = await merged.embedJpg(jpgBuf)
               const d = img.scale(1)
               const pg = merged.addPage([a4W,a4H])
+              // خلفية بيضاء لضمان عدم ظهور سواد للصور الشفافة
+              pg.drawRectangle({ x:0, y:0, width:a4W, height:a4H, color:{r:1,g:1,b:1} })
               let w=maxW, h=(d.height*maxW)/d.width
               if(h>maxH){ h=maxH; w=(d.width*maxH)/d.height }
-              pg.drawImage(img,{ x:(a4W-w)/2, y:(a4H-h)/2, width:w, height:h })
+              // توسيط الصورة مع الحفاظ على النسبة
+              pg.drawImage(img,{ x:(a4W-w)/2, y:(a4H-h)/2 + 10, width:w, height:h })
               // تذييل
               pg.drawText(`وثيقة ${i+1} - مرفق ${j+1}: ${entry.name}`, { x:margin, y:14, size:7, color:{r:0.4,g:0.4,b:0.4} })
             }catch(err){ console.error(err) }
